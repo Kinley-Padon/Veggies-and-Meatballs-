@@ -1,4 +1,4 @@
-package main.java.use_case;
+package use_case;
 
 /**
  * Exception thrown when there is an error with accessing data.
