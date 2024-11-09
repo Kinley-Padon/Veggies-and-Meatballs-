@@ -1,7 +1,7 @@
 package entity
 
 /**
- * Represents a recipe with its name and ID.
+ * Represents a recipe with its ID, name and image.
  */
 
 public class Recipes{
