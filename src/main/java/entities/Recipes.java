@@ -15,7 +15,7 @@ public class Recipes{
     }
 
     public int getname(){
-        return name;
+        return Name;
     }
 
     public int getID(){
