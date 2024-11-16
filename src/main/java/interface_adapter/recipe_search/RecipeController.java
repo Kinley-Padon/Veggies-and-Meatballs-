@@ -11,7 +11,7 @@ public class RecipeController {
         this.recipeInputBoundary = recipeInputBoundary;
     }
 
-    public void searchRecipe(List<Recipes> recipeContent) {
-        recipeInputBoundary.executeSearchRecipe(recipeContent);
+    public void searchRecipe(String userInput) {
+        recipeInputBoundary.executeSearchRecipe(userInput);
     }
 }
