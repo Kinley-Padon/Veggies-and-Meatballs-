@@ -2,6 +2,7 @@ package use_case;
 
 import java.util.List;
 
+
 /**
  * Interface for the Recipe Explorer. Consists of methods for
  * loading recipes and saving recipes.
