@@ -1,4 +1,4 @@
-package use_case;
+package use_case.recipe_search;
 
 /**
  * Exception thrown when there is an error with accessing data.

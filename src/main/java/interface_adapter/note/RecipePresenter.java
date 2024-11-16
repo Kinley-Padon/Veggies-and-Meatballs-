@@ -1,7 +1,5 @@
 package interface_adapter.note;
 
-import use_case.RecipeOutputBoundary;
-
 public class RecipePresenter implements RecipeOutputBoundary {
 
     @Override

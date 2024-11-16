@@ -1,6 +1,4 @@
-package use_case;
-import java.util.List;
-import entities.Recipes;
+package use_case.recipe_search;
 
 /**
  * The "Use Case Interactor" for our use cases.
@@ -22,7 +20,8 @@ public abstract class RecipeInteractor implements use_case.RecipeInputBoundary {
     @Override
     public void executeSearchRecipe(String userInput) {
         try {
-            final List<Recipes> recipeContent = recipeDataAccessInterface.searchRecipe(userInput);
+
+            final String recipeContent = recipeDataAccessInterface.searchRecipe(userInput);
             // If successful, send the recipe content to the output boundary's success view
             recipeOutputBoundary.prepareSuccessView(recipeContent);
         } catch (RecipeDataAccessException ex) {

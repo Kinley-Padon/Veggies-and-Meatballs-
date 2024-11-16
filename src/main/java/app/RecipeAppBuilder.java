@@ -8,7 +8,6 @@ import interface_adapter.note.RecipePresenter;
 import interface_adapter.note.RecipeViewModel;
 import use_case.RecipeDataAccessInterface;
 import use_case.RecipeInteractor;
-import use_case.RecipeOutputBoundary;
 
 /**
  * Builder for the Recipe Application.
