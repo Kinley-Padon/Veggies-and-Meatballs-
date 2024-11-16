@@ -4,6 +4,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import use_case.RecipeDataAccessException;
 import use_case.RecipeDataAccessInterface;
@@ -33,7 +34,7 @@ public class DBRecipeDataAccessObject implements RecipeDataAccessInterface {
      */
 
     @Override
-    public List<Recipes> SearchRecipe(String user, String userInput) throws RecipeDataAccessException {
+    public List searchRecipe(String userInput) throws RecipeDataAccessException {
         // Build the request URL
         String url = API_URL + "?query=" + userInput + "&apiKey=" + apiKey;
         Request request = new Request.Builder()
@@ -44,11 +45,14 @@ public class DBRecipeDataAccessObject implements RecipeDataAccessInterface {
 
         // Execute the request
         try (Response response = client.newCall(request).execute()) {
-            if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+            if (!response.isSuccessful()) {
+                throw new RecipeDataAccessException("Failed to fetch recipes. HTTP code: " + response.code());
+            }
 
 
             // Parse JSON response
-            JSONObject jsonResponse = new JSONObject(response.body().string());
+            String responseBody = response.body().string();
+            JSONObject jsonResponse = new JSONObject(responseBody);
             JSONArray resultsArray = jsonResponse.getJSONArray("results");
 
 
@@ -62,9 +66,11 @@ public class DBRecipeDataAccessObject implements RecipeDataAccessInterface {
 
                 recipes.add(new Recipes(id, name));
             }
-
-
             return recipes;
+        }
+
+        catch (IOException | JSONException e) {
+            throw new RecipeDataAccessException("Error while processing the API response: " + e.getMessage());
         }
     }
 }
