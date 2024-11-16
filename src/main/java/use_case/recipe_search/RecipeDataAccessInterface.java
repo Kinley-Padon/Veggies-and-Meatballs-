@@ -15,5 +15,4 @@ public interface RecipeDataAccessInterface {
      */
 
     List searchRecipe(String userInput) throws RecipeDataAccessException;
-
 }
