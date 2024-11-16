@@ -25,7 +25,7 @@ public class RecipeInteractor implements RecipeInputBoundary {
             // If successful, send the recipe content to the output boundary's success view
             recipeOutputBoundary.prepareSuccessView(recipeContent);
         } catch (RecipeDataAccessException ex) {
-            RecipeOutputBoundary.prepareFailView(ex.getMessage());
+            recipeOutputBoundary.prepareFailView(ex.getMessage());
         }
     }
 }
