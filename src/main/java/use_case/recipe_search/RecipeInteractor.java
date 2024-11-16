@@ -1,4 +1,6 @@
 package use_case.recipe_search;
+import java.util.List;
+import entities.Recipes;
 
 /**
  * The "Use Case Interactor" for our use cases.
