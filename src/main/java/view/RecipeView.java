@@ -5,12 +5,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import interface_adapter.recipe_search.RecipeController;
@@ -24,11 +27,12 @@ public class RecipeView extends JPanel implements ActionListener, PropertyChange
 
     private final RecipeViewModel recipeViewModel;
 
-    private final JLabel recipeName = new JLabel("Recipe Details");
-    private final JTextArea recipeInputField = new JTextArea();
+    private final JLabel recipeNameLabel = new JLabel("Enter Recipe Name:");
+    private final JTextArea recipeInputField = new JTextArea(1, 20); // Single-line input for recipe name
+    private final JButton searchButton = new JButton("Search");
 
-    private final JButton saveButton = new JButton("Save");
-    private final JButton refreshButton = new JButton("Refresh");
+    private final JTextArea recipeResultsArea = new JTextArea(10, 30);  // Multiline area to display results
+    private final JScrollPane recipeResultsScrollPane = new JScrollPane(recipeResultsArea);
 
     private RecipeController recipeController;
 
@@ -38,35 +42,34 @@ public class RecipeView extends JPanel implements ActionListener, PropertyChange
      * @param recipeViewModel The RecipeViewModel to bind to the view.
      */
     public RecipeView(RecipeViewModel recipeViewModel) {
-
         this.recipeViewModel = recipeViewModel;
         this.recipeViewModel.addPropertyChangeListener(this);
 
-        recipeName.setAlignmentX(Component.CENTER_ALIGNMENT);
+        recipeNameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        final JPanel buttons = new JPanel();
-        buttons.add(saveButton);
-        buttons.add(refreshButton);
+        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-        saveButton.addActionListener(
+        searchButton.addActionListener(
                 evt -> {
-                    if (evt.getSource().equals(saveButton)) {
+                    if (evt.getSource().equals(searchButton)) {
                         if (recipeController != null) {
-                            recipeController.searchRecipe(recipeInputField.getText());
+                            String recipeName = recipeInputField.getText();
+                            recipeController.searchRecipe(recipeName);
                         }
                     }
                 }
         );
 
-
-        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        this.add(recipeName);
+        this.add(recipeNameLabel);
         this.add(recipeInputField);
-        this.add(buttons);
+        this.add(searchButton);
+        this.add(new JLabel("Search Results:"));
+        this.add(recipeResultsScrollPane);
     }
 
     /**
      * Handles button click actions.
+     *
      * @param evt the ActionEvent to handle.
      */
     @Override
@@ -76,6 +79,7 @@ public class RecipeView extends JPanel implements ActionListener, PropertyChange
 
     /**
      * Reacts to property changes from the RecipeViewModel.
+     *
      * @param evt the PropertyChangeEvent to process.
      */
     @Override
@@ -92,14 +96,28 @@ public class RecipeView extends JPanel implements ActionListener, PropertyChange
 
     /**
      * Updates the input fields based on the RecipeState.
+     *
      * @param state The RecipeState to update from.
      */
     private void updateFields(RecipeState state) {
-        recipeInputField.setText(state.getRecipeDetails());
+        // Retrieve the recipe details and display them as a formatted string
+        HashMap<String, Integer> recipeDetails = state.getRecipeDetails();
+        if (recipeDetails != null && !recipeDetails.isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+            for (Map.Entry<String, Integer> entry : recipeDetails.entrySet()) {
+                sb.append("Recipe Name: ").append(entry.getKey())
+                        .append(" | ID: ").append(entry.getValue())
+                        .append("\n");
+            }
+            recipeResultsArea.setText(sb.toString());
+        } else {
+            recipeResultsArea.setText("No recipes found for the given search.");
+        }
     }
 
     /**
      * Sets the controller for handling recipe actions.
+     *
      * @param controller The RecipeController to set.
      */
     public void setRecipeController(RecipeController controller) {
