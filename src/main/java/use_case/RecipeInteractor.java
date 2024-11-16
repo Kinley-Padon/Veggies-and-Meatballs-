@@ -1,5 +1,7 @@
 package use_case;
 
+import entities.Recipes;
+
 /**
  * The "Use Case Interactor" for our use cases.
  */
