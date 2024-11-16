@@ -1,6 +1,7 @@
 package use_case;
 
 import java.util.List;
+import entities.Recipes;
 
 
 /**
@@ -15,5 +16,5 @@ public interface RecipeDataAccessInterface {
      * @throws RecipeDataAccessException if the recipe cannot be accessed
      */
 
-    List searchRecipe(String userInput) throws RecipeDataAccessException;
+    List<Recipes> searchRecipe(String userInput) throws RecipeDataAccessException;
 }
