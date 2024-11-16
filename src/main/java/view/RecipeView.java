@@ -59,6 +59,7 @@ public class RecipeView extends JPanel implements ActionListener, PropertyChange
                     }
                 }
         );
+        recipeResultsArea.setEditable(false);
 
         this.add(recipeNameLabel);
         this.add(recipeInputField);
