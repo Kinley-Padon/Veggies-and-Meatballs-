@@ -1,16 +1,20 @@
 package use_case;
-
-import entities.Recipes;
-
-import java.util.List;
-
 /**
- * The output boundary for the Recipe Search Use Case.
+ * The output boundary for the Recipe search Use Case.
  */
+
 public interface RecipeOutputBoundary {
+
     /**
-     * Prepares the success view for the Note related Use Cases.
-     * @param recipeContent the output data
+     * Prepares the success view for the Search related Use Cases.
+     * @param message the output data
      */
-    void prepareSuccessView(List<Recipes> recipeContent);
+    void prepareSuccessView(String message);
+
+    /**
+     * Prepares the failure view for the Search related Use Cases.
+     * @param errorMessage the explanation of the failure
+     */
+    void prepareFailView(String errorMessage);
+
 }
