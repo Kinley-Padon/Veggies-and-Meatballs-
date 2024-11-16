@@ -7,7 +7,6 @@ import main.java.entities.User;
  * loading recipes and saving recipes.
  */
 public interface RecipeDataAccessInterface {
-
     /**
      * Access recipe from the API with the given keyword.
      * @param user the user information
@@ -15,6 +14,7 @@ public interface RecipeDataAccessInterface {
      * @return contents/id of the recipe
      * @throws RecipeDataAccessException if the recipe cannot be accessed
      */
+
     String SearchRecipe(User user, String userInput) throws RecipeDataAccessException;
 
 }
