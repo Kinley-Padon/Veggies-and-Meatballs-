@@ -21,7 +21,7 @@ public abstract class RecipeInteractor implements main.java.use_case.RecipeInput
     public void executeSearchRecipe(String userInput) {
         try {
 
-            final String recipeContent = recipeDataAccessInterface.SearchRecipe(userInput);
+            final String recipeContent = recipeDataAccessInterface.searchRecipe(userInput);
             // If successful, send the recipe content to the output boundary's success view
             recipeOutputBoundary.prepareSuccessView(recipeContent);
         } catch (RecipeDataAccessException ex) {
