@@ -15,7 +15,6 @@ public class RecipeInteractor implements RecipeInputBoundary {
         this.recipeDataAccessInterface = recipeDataAccessInterface;
         this.recipeOutputBoundary = recipeOutputBoundary;
     }
-
     /**
      * Executes the search recipe use case.
      */
