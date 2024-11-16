@@ -1,6 +1,6 @@
 package use_case;
 import java.util.List;
-import entities.Recipes
+import entities.Recipes;
 /**
  * The "Use Case Interactor" for our use cases.
  */
