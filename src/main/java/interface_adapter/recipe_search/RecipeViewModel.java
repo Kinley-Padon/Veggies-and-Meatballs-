@@ -1,21 +1,10 @@
 package interface_adapter.recipe_search;
 
-public class RecipeViewModel {
-    private final RecipeState state;
+import interface_adapter.ViewModel;
 
+public class RecipeViewModel extends ViewModel<RecipeState> {
     public RecipeViewModel() {
-        this.state = new RecipeState();
-    }
-
-    public RecipeState getState() {
-        return state;
-    }
-
-    public void updateRecipeDetails(String details) {
-        state.setRecipeDetails(details);
-    }
-
-    public void updateError(String error) {
-        state.setErrorMessage(error);
+        super("note");
+        setState(new RecipeState());
     }
 }
