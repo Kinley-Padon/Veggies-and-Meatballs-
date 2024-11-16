@@ -10,6 +10,6 @@ public class RecipeController {
     }
 
     public void searchRecipe(String userInput) {
-        recipeInputBoundary.executeSearchRecipe(userInput);
+        recipeInputBoundary.executeSearchRecipe();
     }
 }

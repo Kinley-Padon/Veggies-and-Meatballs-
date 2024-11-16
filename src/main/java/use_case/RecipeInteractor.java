@@ -1,9 +1,11 @@
 package use_case;
 
+import entities.Recipes;
+
 /**
  * The "Use Case Interactor" for our use cases.
  */
-public abstract class RecipeInteractor implements main.java.use_case.RecipeInputBoundary {
+public abstract class RecipeInteractor implements use_case.RecipeInputBoundary {
 
     private final RecipeDataAccessInterface recipeDataAccessInterface;
     private final RecipeOutputBoundary recipeOutputBoundary;
