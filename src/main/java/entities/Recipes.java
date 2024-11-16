@@ -1,4 +1,4 @@
-package entity
+package entities;
 
 /**
  * Represents a recipe with its ID, name and image.
@@ -14,7 +14,7 @@ public class Recipes{
         this.Name = Name;
     }
 
-    public int getname(){
+    public String getName(){
         return Name;
     }
 
