@@ -20,7 +20,6 @@ public abstract class RecipeInteractor implements use_case.RecipeInputBoundary {
     @Override
     public void executeSearchRecipe(String userInput) {
         try {
-
             final String recipeContent = recipeDataAccessInterface.searchRecipe(userInput);
             // If successful, send the recipe content to the output boundary's success view
             recipeOutputBoundary.prepareSuccessView(recipeContent);
