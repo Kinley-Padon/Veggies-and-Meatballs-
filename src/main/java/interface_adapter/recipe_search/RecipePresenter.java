@@ -7,13 +7,21 @@ import java.util.List;
 
 public class RecipePresenter implements RecipeOutputBoundary {
 
+    private final RecipeViewModel recipeViewModel;
+
+    public RecipePresenter(RecipeViewModel recipeViewModel) {
+        this.recipeViewModel = recipeViewModel;
+    }
     @Override
     public void prepareSuccessView(List<Recipes> recipeContents) {
-        System.out.println("Recipe found: " + recipeContents);
+        recipeViewModel.getState().setRecipeDetails(recipeContents);
+        recipeViewModel.getState().setErrorMessage(null);
+        recipeViewModel.firePropertyChanged();
     }
 
     @Override
     public void prepareFailView(String errorMessage) {
-        System.out.println("Failed to find recipe: " + errorMessage);
+        recipeViewModel.getState().setErrorMessage(errorMessage);
+        recipeViewModel.firePropertyChanged();
     }
 }
