@@ -8,5 +8,5 @@ public interface RecipeInputBoundary {
     /**
      * Executes the search recipe usecase.
      */
-    void executeSearchRecipe();
+    void executeSearchRecipe(String userInput);
 }
