@@ -1,4 +1,4 @@
-package interface_adapter.note;
+package interface_adapter.Recipe;
 
 import use_case.RecipeInputBoundary;
 
@@ -9,7 +9,7 @@ public class RecipeController {
         this.recipeInputBoundary = recipeInputBoundary;
     }
 
-    public void searchRecipe(String userInput) {
-        recipeInputBoundary.executeSearchRecipe(userInput);
+    public void searchRecipe(List<Recipes> recipeContent) {
+        recipeInputBoundary.executeSearchRecipe(recipeContent);
     }
 }
