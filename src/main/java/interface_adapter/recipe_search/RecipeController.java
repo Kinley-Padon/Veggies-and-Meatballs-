@@ -1,6 +1,9 @@
-package interface_adapter.Recipe;
+package interface_adapter.recipe_search;
 
-import use_case.RecipeInputBoundary;
+import use_case.recipe_search.RecipeInputBoundary;
+import entities.Recipes;
+
+import java.util.List;
 
 public class RecipeController {
     private final RecipeInputBoundary recipeInputBoundary;

@@ -1,7 +1,6 @@
 package interface_adapter;
 
-
-import interface_adapter.note.RecipeState;
+import interface_adapter.recipe_search.RecipeState;
 
 public class ViewModel {
     private RecipeState state;
