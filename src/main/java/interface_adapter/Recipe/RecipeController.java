@@ -1,6 +1,7 @@
 package interface_adapter.Recipe;
 
 import use_case.RecipeInputBoundary;
+import entities.Recipes;
 
 public class RecipeController {
     private final RecipeInputBoundary recipeInputBoundary;
