@@ -3,7 +3,7 @@ package use_case.recipe_search;
 /**
  * The "Use Case Interactor" for our use cases.
  */
-public abstract class RecipeInteractor implements use_case.RecipeInputBoundary {
+public abstract class RecipeInteractor implements RecipeInputBoundary {
 
     private final RecipeDataAccessInterface recipeDataAccessInterface;
     private final RecipeOutputBoundary recipeOutputBoundary;
@@ -21,7 +21,7 @@ public abstract class RecipeInteractor implements use_case.RecipeInputBoundary {
     public void executeSearchRecipe(String userInput) {
         try {
 
-            final String recipeContent = recipeDataAccessInterface.searchRecipe(userInput);
+            final List<Recipes> recipeContent = recipeDataAccessInterface.searchRecipe(userInput);
             // If successful, send the recipe content to the output boundary's success view
             recipeOutputBoundary.prepareSuccessView(recipeContent);
         } catch (RecipeDataAccessException ex) {
