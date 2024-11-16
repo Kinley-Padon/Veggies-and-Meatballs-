@@ -1,4 +1,4 @@
-package interface_adapter.note;
+package interface_adapter.recipe_search;
 
 public class RecipeViewModel {
     private final RecipeState state;
