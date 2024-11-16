@@ -2,6 +2,7 @@ package use_case;
 
 import main.java.entities.User;
 
+
 /**
  * Interface for the Recipe Explorer. Consists of methods for
  * loading recipes and saving recipes.
