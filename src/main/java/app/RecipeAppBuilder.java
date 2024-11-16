@@ -3,62 +3,62 @@ package app;
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
-import interface_adapter.recipe.NoteController;
-import interface_adapter.recipe.NotePresenter;
-import interface_adapter.recipe.NoteViewModel;
-import use_case.recipe.NoteDataAccessInterface;
-import use_case.recipe.NoteInteractor;
-import use_case.recipe.RecipeOutputBoundary;
-import view.NoteView;
+import interface_adapter.note.RecipeController;
+import interface_adapter.note.RecipePresenter;
+import interface_adapter.note.RecipeViewModel;
+import use_case.RecipeDataAccessInterface;
+import use_case.RecipeInteractor;
+import use_case.RecipeOutputBoundary;
 
 /**
- * Builder for the Note Application.
+ * Builder for the Recipe Application.
  */
-public class NoteAppBuilder {
+
+public class RecipeAppBuilder {
     public static final int HEIGHT = 300;
     public static final int WIDTH = 400;
-    private NoteDataAccessInterface noteDAO;
-    private NoteViewModel noteViewModel = new NoteViewModel();
-    private NoteView noteView;
-    private NoteInteractor noteInteractor;
+    private RecipeDataAccessInterface recipeDAO;
+    private RecipeViewModel recipeViewModel = new RecipeViewModel();
+    private RecipeView recipeView;
+    private RecipeInteractor recipeInteractor;
 
     /**
-     * Sets the NoteDAO to be used in this application.
-     * @param noteDataAccess the DAO to use
+     * Sets the RecipeDAO to be used in this application.
+     * @param recipeDataAccess the DAO to use
      * @return this builder
      */
-    public NoteAppBuilder addNoteDAO(NoteDataAccessInterface noteDataAccess) {
-        noteDAO = noteDataAccess;
+    public RecipeAppBuilder addRecipeDAO(RecipeDataAccessInterface recipeDataAccess) {
+        recipeDAO = recipeDataAccess;
         return this;
     }
 
     /**
-     * Creates the objects for the Note Use Case and connects the NoteView to its
+     * Creates the objects for the Recipe Use Case and connects the RecipeView to its
      * controller.
-     * <p>This method must be called after addNoteView!</p>
+     * <p>This method must be called after addRecipeView!</p>
      * @return this builder
-     * @throws RuntimeException if this method is called before addNoteView
+     * @throws RuntimeException if this method is called before addRecipeView
      */
-    public NoteAppBuilder addNoteUseCase() {
-        final NoteOutputBoundary noteOutputBoundary = new NotePresenter(noteViewModel);
-        noteInteractor = new NoteInteractor(
-                noteDAO, noteOutputBoundary);
+    public RecipeAppBuilder addRecipeUseCase() {
+        final RecipeOutputBoundary recipeOutputBoundary = new RecipePresenter(recipeViewModel);
+        recipeInteractor = new RecipeInteractor(
+                recipeDAO, recipeOutputBoundary);
 
-        final NoteController controller = new NoteController(noteInteractor);
-        if (noteView == null) {
-            throw new RuntimeException("addNoteView must be called before addNoteUseCase");
+        final RecipeController controller = new RecipeController(recipeInteractor);
+        if (recipeView == null) {
+            throw new RuntimeException("addRecipeView must be called before addRecipeUseCase");
         }
-        noteView.setNoteController(controller);
+        recipeView.setRecipeController(controller);
         return this;
     }
 
     /**
-     * Creates the NoteView and underlying NoteViewModel.
+     * Creates the RecipeView and underlying RecipeViewModel.
      * @return this builder
      */
-    public NoteAppBuilder addNoteView() {
-        noteViewModel = new NoteViewModel();
-        noteView = new NoteView(noteViewModel);
+    public RecipeAppBuilder addRecipeView() {
+        recipeViewModel = new RecipeViewModel();
+        recipeView = new RecipeView(recipeViewModel);
         return this;
     }
 
@@ -69,15 +69,17 @@ public class NoteAppBuilder {
     public JFrame build() {
         final JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.setTitle("Note Application");
+        frame.setTitle("Recipe Explorer");
         frame.setSize(WIDTH, HEIGHT);
 
-        frame.add(noteView);
+        frame.add(recipeView);
 
-        // refresh so that the note will be visible when we start the program
-        noteInteractor.executeRefresh();
+        // refresh so that the recipe data will be visible when we start the program
+        recipeInteractor.executeSearchRecipe(user, userInput);
 
         return frame;
-
     }
+
 }
+
+
