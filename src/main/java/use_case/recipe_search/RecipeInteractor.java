@@ -27,7 +27,6 @@ public class RecipeInteractor implements RecipeInputBoundary {
         } catch (RecipeDataAccessException ex) {
             RecipeOutputBoundary.prepareFailView(ex.getMessage());
         }
-
     }
 }
 
