@@ -1,15 +1,16 @@
 package app;
 
-import data_access.DB
+import data_access.DBRecipeDataAccessObject;
+import use_case.RecipeDataAccessInterface;
 
 public class MainRecipeApplication {
     // create the data access and inject it into our builder!
 
     public static void main(String[] args) {
-        final RecipeDataAccessInterface RecipeDataAccess = new DBRecipeDataAccessObject();
+        final RecipeDataAccessInterface recipeDataAccess = new DBRecipeDataAccessObject();
 
         final RecipeAppBuilder builder = new RecipeAppBuilder();
-        builder.addRecipeDAO(noteDataAccess)
+        builder.addRecipeDAO(recipeDataAccess)
                 .addRecipeView()
                 .addRecipeUseCase().build().setVisible(true);
     }
