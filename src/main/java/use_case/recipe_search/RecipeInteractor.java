@@ -20,7 +20,7 @@ public abstract class RecipeInteractor implements RecipeInputBoundary {
      * Executes the search recipe use case.
      */
     @Override
-    public void executeSearchRecipe(String userInput) {
+    public void executeSearchRecipe(List<Recipes> recipes) {
         try {
 
             final List<Recipes> recipeContent = recipeDataAccessInterface.searchRecipe(userInput);
