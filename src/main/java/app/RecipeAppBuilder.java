@@ -3,12 +3,13 @@ package app;
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
-import interface_adapter.note.RecipeController;
-import interface_adapter.note.RecipePresenter;
-import interface_adapter.note.RecipeViewModel;
-import use_case.RecipeDataAccessInterface;
-import use_case.RecipeInteractor;
-
+import interface_adapter.recipe_search.RecipeController;
+import interface_adapter.recipe_search.RecipePresenter;
+import interface_adapter.recipe_search.RecipeViewModel;
+import use_case.recipe_search.RecipeDataAccessInterface;
+import use_case.recipe_search.RecipeInteractor;
+import use_case.recipe_search.RecipeOutputBoundary;
+import view.RecipeView;
 /**
  * Builder for the Recipe Application.
  */
@@ -40,8 +41,7 @@ public class RecipeAppBuilder {
      */
     public RecipeAppBuilder addRecipeUseCase() {
         final RecipeOutputBoundary recipeOutputBoundary = new RecipePresenter(recipeViewModel);
-        recipeInteractor = new RecipeInteractor(
-                recipeDAO, recipeOutputBoundary);
+        recipeInteractor = new RecipeInteractor(recipeDAO, recipeOutputBoundary);
 
         final RecipeController controller = new RecipeController(recipeInteractor);
         if (recipeView == null) {
@@ -72,9 +72,6 @@ public class RecipeAppBuilder {
         frame.setSize(WIDTH, HEIGHT);
 
         frame.add(recipeView);
-
-        // refresh so that the recipe data will be visible when we start the program
-        recipeInteractor.executeSearchRecipe(user, userInput);
 
         return frame;
     }

@@ -1,7 +1,7 @@
 package app;
 
 import data_access.DBRecipeDataAccessObject;
-import use_case.RecipeDataAccessInterface;
+import use_case.recipe_search.RecipeDataAccessInterface;
 
 public class MainRecipeApplication {
     // create the data access and inject it into our builder!
