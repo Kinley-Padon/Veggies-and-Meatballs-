@@ -19,9 +19,9 @@ public class RecipeInteractor implements RecipeInputBoundary {
      * Executes the search recipe use case.
      */
     @Override
-    public void executeSearchRecipe(String name) {
+    public void executeSearchRecipe(String userinput) {
         try {
-            final List<Recipes> recipeContent = recipeDataAccessInterface.searchRecipe(userInput);
+            final List<Recipes> recipeContent = recipeDataAccessInterface.searchRecipe(userinput);
             // If successful, send the recipe content to the output boundary's success view
             recipeOutputBoundary.prepareSuccessView(recipeContent);
         } catch (RecipeDataAccessException ex) {
