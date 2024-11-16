@@ -1,15 +1,19 @@
 package interface_adapter.recipe_search;
 
+import entities.Recipes;
+
+import java.util.List;
+
 public class RecipeState {
-    private String recipeDetails;
+    private List<Recipes> recipeContents;
     private String errorMessage;
 
     public String getRecipeDetails() {
-        return recipeDetails;
+        return recipeContents;
     }
 
     public void setRecipeDetails(String recipeDetails) {
-        this.recipeDetails = recipeDetails;
+        this.recipeContents; = recipeDetails;
     }
 
     public String getErrorMessage() {
