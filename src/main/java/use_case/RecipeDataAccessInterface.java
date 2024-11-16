@@ -1,6 +1,8 @@
 package use_case;
 
 import java.util.List;
+import java.entities;
+
 
 /**
  * Interface for the Recipe Explorer. Consists of methods for
@@ -14,5 +16,5 @@ public interface RecipeDataAccessInterface {
      * @throws RecipeDataAccessException if the recipe cannot be accessed
      */
 
-    List searchRecipe(String userInput) throws RecipeDataAccessException;
+    List<Recipes> searchRecipe(String userInput) throws RecipeDataAccessException;
 }
