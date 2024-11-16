@@ -1,7 +1,7 @@
 package use_case;
 
 import java.util.List;
-import java.entities;
+import entities.Recipes;
 
 
 /**
