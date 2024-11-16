@@ -1,4 +1,4 @@
-package use_case;
+package use_case.recipe_search;
 
 /**
  * The Input Boundary for recipe use cases.

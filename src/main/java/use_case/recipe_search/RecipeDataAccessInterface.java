@@ -1,4 +1,4 @@
-package use_case;
+package use_case.recipe_search;
 
 import java.util.List;
 import entities.Recipes;
