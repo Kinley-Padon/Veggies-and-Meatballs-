@@ -10,6 +10,7 @@ import java.util.Map;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -30,9 +31,6 @@ public class RecipeView extends JPanel implements ActionListener, PropertyChange
     private final JLabel recipeNameLabel = new JLabel("Enter Recipe Name:");
     private final JTextArea recipeInputField = new JTextArea(1, 20); // Single-line input for recipe name
     private final JButton searchButton = new JButton("Search");
-
-    private final JTextArea recipeResultsArea = new JTextArea(10, 30);  // Multiline area to display results
-    private final JScrollPane recipeResultsScrollPane = new JScrollPane(recipeResultsArea);
 
     private RecipeController recipeController;
 
@@ -59,13 +57,10 @@ public class RecipeView extends JPanel implements ActionListener, PropertyChange
                     }
                 }
         );
-        recipeResultsArea.setEditable(false);
 
         this.add(recipeNameLabel);
         this.add(recipeInputField);
         this.add(searchButton);
-        this.add(new JLabel("Search Results:"));
-        this.add(recipeResultsScrollPane);
     }
 
     /**
@@ -87,7 +82,7 @@ public class RecipeView extends JPanel implements ActionListener, PropertyChange
     public void propertyChange(PropertyChangeEvent evt) {
         if ("state".equals(evt.getPropertyName())) {
             final RecipeState state = (RecipeState) evt.getNewValue();
-            updateFields(state);
+            showResultsInNewFrame(state);
             if (state.getErrorMessage() != null) {
                 JOptionPane.showMessageDialog(this, state.getErrorMessage(),
                         "Error", JOptionPane.ERROR_MESSAGE);
@@ -96,11 +91,19 @@ public class RecipeView extends JPanel implements ActionListener, PropertyChange
     }
 
     /**
-     * Updates the input fields based on the RecipeState.
+     * Displays the search results in a new JFrame.
      *
-     * @param state The RecipeState to update from.
+     * @param state The RecipeState containing the search results.
      */
-    private void updateFields(RecipeState state) {
+    private void showResultsInNewFrame(RecipeState state) {
+        JFrame resultsFrame = new JFrame("Search Results");
+        resultsFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        resultsFrame.setSize(400, 300);
+
+        JTextArea recipeResultsArea = new JTextArea(10, 30); // Multiline area to display results
+        recipeResultsArea.setEditable(false);
+        JScrollPane recipeResultsScrollPane = new JScrollPane(recipeResultsArea);
+
         // Retrieve the recipe details and display them as a formatted string
         HashMap<String, Integer> recipeDetails = state.getRecipeDetails();
         if (recipeDetails != null && !recipeDetails.isEmpty()) {
@@ -112,8 +115,16 @@ public class RecipeView extends JPanel implements ActionListener, PropertyChange
             }
             recipeResultsArea.setText(sb.toString());
         } else {
-            recipeResultsArea.setText("No recipes found for the given search.");
+            recipeResultsArea.setText("No recipes found.");
         }
+
+        JPanel resultsPanel = new JPanel();
+        resultsPanel.setLayout(new BoxLayout(resultsPanel, BoxLayout.Y_AXIS));
+        resultsPanel.add(new JLabel("Search Results:"));
+        resultsPanel.add(recipeResultsScrollPane);
+
+        resultsFrame.add(resultsPanel);
+        resultsFrame.setVisible(true);
     }
 
     /**
