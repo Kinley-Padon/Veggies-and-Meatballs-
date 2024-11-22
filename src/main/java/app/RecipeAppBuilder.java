@@ -1,8 +1,5 @@
 package app;
 
-import javax.swing.JFrame;
-import javax.swing.WindowConstants;
-
 import interface_adapter.recipe_search.RecipeController;
 import interface_adapter.recipe_search.RecipePresenter;
 import interface_adapter.recipe_search.RecipeViewModel;
@@ -10,6 +7,8 @@ import use_case.recipe_search.RecipeDataAccessInterface;
 import use_case.recipe_search.RecipeInteractor;
 import use_case.recipe_search.RecipeOutputBoundary;
 import view.RecipeView;
+
+import javax.swing.*;
 /**
  * Builder for the Recipe Application.
  */
