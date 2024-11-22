@@ -49,7 +49,6 @@ public class RecipeView extends JPanel implements ActionListener, PropertyChange
                 evt -> {
                     if (evt.getSource().equals(searchButton)) {
                         if (recipeController != null) {
-                            // 当点击搜索按钮时，调用控制器方法
                             String recipeName = recipeInputField.getText();
                             String allergen = allergenInputField.getText();
                             recipeController.searchRecipe(recipeName, allergen);
@@ -58,7 +57,6 @@ public class RecipeView extends JPanel implements ActionListener, PropertyChange
                 }
         );
 
-        // 设置列表为不可编辑
         recipeResultsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         recipeResultsList.addMouseListener(new MouseAdapter() {
             @Override
@@ -84,9 +82,8 @@ public class RecipeView extends JPanel implements ActionListener, PropertyChange
     }
 
     /**
-     * 显示菜谱详细信息
      *
-     * @param recipe 被选中的菜谱
+     * @param recipe chosen recipe
      */
     private void showRecipeDetails(Recipes recipe) {
         JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
