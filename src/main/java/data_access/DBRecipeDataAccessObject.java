@@ -1,6 +1,5 @@
 package data_access;
 
-import entities.Ingredient;
 import entities.Recipes;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -84,76 +83,6 @@ public class DBRecipeDataAccessObject implements RecipeDataAccessInterface {
             throw new RecipeDataAccessException("Error while processing the API response: " + e.getMessage());
         }
     }
-
-    public List<Ingredient> getRecipeIngredients(final int recipeId) throws RecipeDataAccessException {
-        String url = String.format("https://api.spoonacular.com/recipes/%d/ingredientWidget.json?apiKey=%s", recipeId, apiKey);
-        Request request = new Request.Builder()
-                .url(url)
-                .get()
-                .build();
-
-        try (Response response = client.newCall(request).execute()) {
-            if (!response.isSuccessful()) {
-                throw new RecipeDataAccessException("Failed to fetch recipe ingredients. HTTP code: " + response.code());
-            }
-
-            String responseBody = response.body().string();
-            JSONObject jsonResponse = new JSONObject(responseBody);
-            JSONArray ingredientsArray = jsonResponse.getJSONArray("ingredients");
-
-            List<Ingredient> ingredients = new ArrayList<>();
-            for (int i = 0; i < ingredientsArray.length(); i++) {
-                JSONObject ingredientJson = ingredientsArray.getJSONObject(i);
-                String name = ingredientJson.getString("name");
-                String image = ingredientJson.getString("image");
-                JSONObject metricAmount = ingredientJson.getJSONObject("amount").getJSONObject("metric");
-                double value = metricAmount.getDouble("value");
-                String unit = metricAmount.getString("unit");
-
-                ingredients.add(new Ingredient(name, image, value, unit));
-            }
-            return ingredients;
-
-        } catch (IOException | JSONException e) {
-            throw new RecipeDataAccessException("Error while processing the API response: " + e.getMessage());
-        }
-    }
-
-    public List<String> getSubstitutions(final String ingredientName) throws RecipeDataAccessException {
-        String url = String.format("https://api.spoonacular.com/food/ingredients/substitutes?ingredientName=%s&apiKey=%s", ingredientName, apiKey);
-        Request request = new Request.Builder()
-                .url(url)
-                .get()
-                .build();
-
-        try (Response response = client.newCall(request).execute()) {
-            if (!response.isSuccessful()) {
-                throw new RecipeDataAccessException("Failed to fetch substitutions. HTTP code: " + response.code());
-            }
-
-            String responseBody = response.body().string();
-            JSONObject jsonResponse = new JSONObject(responseBody);
-
-            JSONArray substitutesArray = jsonResponse.optJSONArray("substitutes");
-            List<String> substitutions = new ArrayList<>();
-
-            if (substitutesArray != null) {
-                for (int i = 0; i < substitutesArray.length(); i++) {
-                    substitutions.add(substitutesArray.getString(i));
-                }
-            }
-
-            if (substitutions.isEmpty()) {
-                substitutions.add("No substitutions available for " + ingredientName);
-            }
-
-            return substitutions;
-
-        } catch (IOException | JSONException e) {
-            throw new RecipeDataAccessException("Error while processing the API response: " + e.getMessage());
-        }
-    }
-
 
     @Override
     public String getInstructions(int recipeId) throws RecipeDataAccessException {
