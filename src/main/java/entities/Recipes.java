@@ -37,7 +37,7 @@ public class Recipes{
 
     @Override
     public String toString() {
-        return String.format("id [%d] name [%s]", id, name);
+        return String.format("<%s>", name);
     }
 
     public String getDescription() {

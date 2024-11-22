@@ -1,5 +1,6 @@
 package use_case.recipe_search;
 
+import entities.Ingredient;
 import entities.Recipes;
 
 import java.util.List;
@@ -19,6 +20,10 @@ public interface RecipeDataAccessInterface {
 
     List<Recipes> searchRecipe(String userInput) throws RecipeDataAccessException;
     List<Recipes> searchRecipe(String recipe, String allergen) throws RecipeDataAccessException;
+
+    List<Ingredient> getRecipeIngredients(int recipeId) throws RecipeDataAccessException;
+
+    List<String> getSubstitutions(String ingredientName) throws RecipeDataAccessException;
 
     String getInstructions(int recipeId) throws RecipeDataAccessException;
 }

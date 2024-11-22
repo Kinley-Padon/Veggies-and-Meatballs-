@@ -1,11 +1,13 @@
 package view;
 
 import data_access.DBRecipeDataAccessObject;
+import entities.Ingredient;
 import entities.Recipes;
 
 import javax.swing.*;
 import java.awt.*;
 import java.net.URL;
+import java.util.List;
 
 public class RecipeDetailDialog extends JDialog {
 
@@ -27,7 +29,7 @@ public class RecipeDetailDialog extends JDialog {
         detailsPanel.setLayout(new BoxLayout(detailsPanel, BoxLayout.Y_AXIS));
         detailsPanel.add(nameLabel);
         detailsPanel.add(idLabel);
-        detailsPanel.add(imageLabel); // 添加图片标签
+        detailsPanel.add(imageLabel);
         detailsPanel.add(new JLabel("Instruction:"));
         detailsPanel.add(new JScrollPane(instructionArea));
 
@@ -38,18 +40,19 @@ public class RecipeDetailDialog extends JDialog {
 
     private void loadRecipeDetails(Recipes recipe) {
         nameLabel.setText("Name: " + recipe.getName());
-        idLabel.setText("ID: " + recipe.getID());
 
         loadImage(recipe.getImage());
 
         new Thread(() -> {
             try {
                 DBRecipeDataAccessObject dataAccessObject = new DBRecipeDataAccessObject();
+                List<Ingredient> ingredients = dataAccessObject.getRecipeIngredients(recipe.getID());
 
                 // get instruction and setinto the description field
                 String instruction = dataAccessObject.getInstructions(recipe.getID());
                 instructionArea.setText(instruction);
 
+                SwingUtilities.invokeLater(() -> displayIngredients(ingredients));
             } catch (Exception e) {
                 SwingUtilities.invokeLater(() -> {
                     JOptionPane.showMessageDialog(this, "Failed to load ingredients.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -77,4 +80,51 @@ public class RecipeDetailDialog extends JDialog {
         }).start();
     }
 
+
+    private void displayIngredients(List<Ingredient> ingredients) {
+        JPanel ingredientsPanel = new JPanel();
+        ingredientsPanel.setLayout(new BoxLayout(ingredientsPanel, BoxLayout.Y_AXIS));
+
+        for (Ingredient ingredient : ingredients) {
+            JPanel ingredientPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            JLabel ingredientLabel = new JLabel(String.format("%s: %.2f %s", ingredient.getName(), ingredient.getQuantity(), ingredient.getUnit()));
+            JButton substitutionButton = new JButton("Show Substitution");
+
+            substitutionButton.addActionListener(evt -> showSubstitution(ingredient.getName()));
+
+            ingredientPanel.add(ingredientLabel);
+            ingredientPanel.add(substitutionButton);
+            ingredientsPanel.add(ingredientPanel);
+        }
+
+        JScrollPane scrollPane = new JScrollPane(ingredientsPanel);
+        this.add(scrollPane, BorderLayout.CENTER);
+
+        this.revalidate();
+        this.repaint();
+    }
+
+    private void showSubstitution(String ingredientName) {
+        new Thread(() -> {
+            try {
+                DBRecipeDataAccessObject dataAccessObject = new DBRecipeDataAccessObject();
+                List<String> substitutions = dataAccessObject.getSubstitutions(ingredientName);
+
+                SwingUtilities.invokeLater(() -> {
+                    JOptionPane.showMessageDialog(this,
+                            String.join("\n", substitutions),
+                            "Substitutions for " + ingredientName,
+                            JOptionPane.INFORMATION_MESSAGE);
+                });
+
+            } catch (Exception e) {
+                SwingUtilities.invokeLater(() -> {
+                    JOptionPane.showMessageDialog(this,
+                            "Failed to fetch substitutions for " + ingredientName,
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                });
+            }
+        }).start();
+    }
 }
