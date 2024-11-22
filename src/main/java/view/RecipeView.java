@@ -1,24 +1,18 @@
 package view;
 
-import java.awt.Component;
+import entities.Recipes;
+import interface_adapter.recipe_search.RecipeController;
+import interface_adapter.recipe_search.RecipeState;
+import interface_adapter.recipe_search.RecipeViewModel;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-
-import interface_adapter.recipe_search.RecipeController;
-import interface_adapter.recipe_search.RecipeViewModel;
-import interface_adapter.recipe_search.RecipeState;
 
 /**
  * The View for managing and displaying recipe details in the program.
@@ -30,9 +24,11 @@ public class RecipeView extends JPanel implements ActionListener, PropertyChange
     private final JLabel recipeNameLabel = new JLabel("Enter Recipe Name:");
     private final JTextArea recipeInputField = new JTextArea(1, 20); // Single-line input for recipe name
     private final JButton searchButton = new JButton("Search");
+    private final JLabel allergenNameLabel = new JLabel("Enter Allergen:");
+    private final JTextArea allergenInputField = new JTextArea(1, 20); // Single-line input for recipe name
 
-    private final JTextArea recipeResultsArea = new JTextArea(10, 30);  // Multiline area to display results
-    private final JScrollPane recipeResultsScrollPane = new JScrollPane(recipeResultsArea);
+    private final DefaultListModel<Recipes> recipeListModel = new DefaultListModel<>();
+    private final JList<Recipes> recipeResultsList = new JList<>(recipeListModel);
 
     private RecipeController recipeController;
 
@@ -54,17 +50,46 @@ public class RecipeView extends JPanel implements ActionListener, PropertyChange
                     if (evt.getSource().equals(searchButton)) {
                         if (recipeController != null) {
                             String recipeName = recipeInputField.getText();
-                            recipeController.searchRecipe(recipeName);
+                            String allergen = allergenInputField.getText();
+                            recipeController.searchRecipe(recipeName, allergen);
                         }
                     }
                 }
         );
 
+        recipeResultsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        recipeResultsList.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) { // 双击事件
+                    int index = recipeResultsList.locationToIndex(e.getPoint());
+                    if (index >= 0) {
+                        Recipes selectedRecipe = recipeListModel.getElementAt(index);
+                        showRecipeDetails(selectedRecipe);
+                    }
+                }
+            }
+        });
+
+        JScrollPane recipeResultsScrollPane = new JScrollPane(recipeResultsList);
         this.add(recipeNameLabel);
         this.add(recipeInputField);
+        this.add(allergenNameLabel);
+        this.add(allergenInputField);
         this.add(searchButton);
         this.add(new JLabel("Search Results:"));
         this.add(recipeResultsScrollPane);
+    }
+
+    /**
+     *
+     * @param recipe chosen recipe
+     */
+    private void showRecipeDetails(Recipes recipe) {
+        JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        RecipeDetailDialog detailDialog = new RecipeDetailDialog(parentFrame, recipe);
+        detailDialog.setLocationRelativeTo(this);
+        detailDialog.setVisible(true);
     }
 
     /**
@@ -100,18 +125,14 @@ public class RecipeView extends JPanel implements ActionListener, PropertyChange
      * @param state The RecipeState to update from.
      */
     private void updateFields(RecipeState state) {
-        // Retrieve the recipe details and display them as a formatted string
-        HashMap<String, Integer> recipeDetails = state.getRecipeDetails();
-        if (recipeDetails != null && !recipeDetails.isEmpty()) {
-            StringBuilder sb = new StringBuilder();
-            for (Map.Entry<String, Integer> entry : recipeDetails.entrySet()) {
-                sb.append("Recipe Name: ").append(entry.getKey())
-                        .append(" | ID: ").append(entry.getValue())
-                        .append("\n");
+        recipeListModel.clear();
+        if (state.getRecipeDetails() != null && !state.getRecipeDetails().isEmpty()) {
+            for (Recipes recipe: state.getRecipeDetails()) {
+                recipeListModel.addElement(recipe);
             }
-            recipeResultsArea.setText(sb.toString());
         } else {
-            recipeResultsArea.setText("No recipes found for the given search.");
+            JOptionPane.showMessageDialog(this, "No recipes found for the given search.",
+                    "No Results", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 

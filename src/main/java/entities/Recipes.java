@@ -1,45 +1,58 @@
 package entities;
 
-import java.util.HashMap;
-
 /**
  * Represents a recipe with its ID, name and image.
  */
 
 public class Recipes{
 
-    private int ID;
-    private String Name;
-    private HashMap<String, Integer> recipeDetails;
+    private final int id;
+    private final String name;
+    private String description;
+    private String ingredients;
+    private String image;
 
-    // Constructor that accepts a HashMap
-    public Recipes(HashMap<String, Integer> recipeDetails) {
-        this.recipeDetails = recipeDetails;
-    }
 
-    // Getter and setter for recipeDetails
-    public HashMap<String, Integer> getRecipeDetails() {
-        return recipeDetails;
-    }
-
-    public void setRecipeDetails(HashMap<String, Integer> recipeDetails) {
-        this.recipeDetails = recipeDetails;
-    }
-
-    public Recipes() {
-    }
-
-    public Recipes(int ID, String Name){
-        this.ID = ID;
-        this.Name = Name;
+    public Recipes(int ID, String Name, String image){
+        this.id = ID;
+        this.name = Name;
+        this.image = image;
     }
 
     public String getName(){
-        return Name;
+        return name;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public int getID(){
-        return ID;
+        return id;
     }
 
+    @Override
+    public String toString() {
+        return String.format("<%s>", name);
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getIngredients() {
+        return ingredients;
+    }
+
+    public void setIngredients(String ingredients) {
+        this.ingredients = ingredients;
+    }
 }
