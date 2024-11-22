@@ -19,7 +19,7 @@ import java.util.List;
 
 public class DBRecipeDataAccessObject implements RecipeDataAccessInterface {
     private static final String API_URL = "https://api.spoonacular.com/recipes/complexSearch";
-    private String apiKey = "36b1d188a2b8448283c5d01c1ff30c5e";
+    private String apiKey = "89e0ffa4eb2648c2b4feb97323a4ef50";
     private final OkHttpClient client = new OkHttpClient();
 
 
