@@ -4,7 +4,6 @@ import entities.Recipes;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class RecipeState {
     private List<Recipes> recipeContents;
@@ -18,6 +17,7 @@ public class RecipeState {
                 recipeDetails.put(recipe.getName(), recipe.getID()); // Add recipe name and ID to the map
             }
         }
+
         return recipeDetails;
     }
 

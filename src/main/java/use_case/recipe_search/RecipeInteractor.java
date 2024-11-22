@@ -5,7 +5,8 @@ import entities.Recipes;
 /**
  * The "Use Case Interactor" for our use cases.
  */
-public class RecipeInteractor implements RecipeInputBoundary {
+public class
+RecipeInteractor implements RecipeInputBoundary {
 
     private final RecipeDataAccessInterface recipeDataAccessInterface;
     private final RecipeOutputBoundary recipeOutputBoundary;

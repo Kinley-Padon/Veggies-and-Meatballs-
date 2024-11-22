@@ -17,7 +17,7 @@ import java.util.List;
 
 public class DBRecipeDataAccessObject implements RecipeDataAccessInterface {
     private static final String API_URL = "https://api.spoonacular.com/recipes/complexSearch";
-    private String apiKey;
+    private String apiKey = "36b1d188a2b8448283c5d01c1ff30c5e";
     private final OkHttpClient client = new OkHttpClient();
 
 
@@ -32,6 +32,8 @@ public class DBRecipeDataAccessObject implements RecipeDataAccessInterface {
      * @return A list of Recipe objects that match the query.
      * @throws Exception if there is an error during the API call or response parsing.
      */
+
+
 
     @Override
     public List<Recipes> searchRecipe(String userInput) throws RecipeDataAccessException {
