@@ -1,5 +1,8 @@
 package entities;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Represents a recipe with its ID, name and image.
  */
@@ -11,12 +14,13 @@ public class Recipes{
     private String description;
     private String ingredients;
     private String image;
-
+    private List<Review> reviews;
 
     public Recipes(int ID, String Name, String image){
         this.id = ID;
         this.name = Name;
         this.image = image;
+        this.reviews = new ArrayList<>();
     }
 
     public String getName(){
@@ -54,5 +58,9 @@ public class Recipes{
 
     public void setIngredients(String ingredients) {
         this.ingredients = ingredients;
+    }
+
+    public List<Review> getReviews() {
+        return reviews;
     }
 }
