@@ -6,6 +6,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
+import data_access.DBRecipeDataAccessObject;
 import data_access.InMemoryUserDataAccessObject;
 import entities.CommonUserFactory;
 import entities.UserFactory;
@@ -21,22 +22,29 @@ import interface_adapter.logout.LogoutPresenter;
 import interface_adapter.signup.SignupController;
 import interface_adapter.signup.SignupPresenter;
 import interface_adapter.signup.SignupViewModel;
+import interface_adapter.recipe_search.RecipeController;
+import interface_adapter.recipe_search.RecipePresenter;
+import interface_adapter.recipe_search.RecipeViewModel;
 import use_case.change_password.ChangePasswordInputBoundary;
 import use_case.change_password.ChangePasswordInteractor;
 import use_case.change_password.ChangePasswordOutputBoundary;
 import use_case.login.LoginInputBoundary;
 import use_case.login.LoginInteractor;
-import use_case.login.LoginOutputBoundary;
 import use_case.logout.LogoutInputBoundary;
 import use_case.logout.LogoutInteractor;
 import use_case.logout.LogoutOutputBoundary;
 import use_case.logout.LogoutUserDataAccessInterface;
+import use_case.recipe_search.RecipeInputBoundary;
 import use_case.signup.SignupInputBoundary;
 import use_case.signup.SignupInteractor;
 import use_case.signup.SignupOutputBoundary;
+import use_case.recipe_search.RecipeDataAccessInterface;
+import use_case.recipe_search.RecipeInteractor;
+import use_case.recipe_search.RecipeOutputBoundary;
 import view.LoggedInView;
 import view.LoginView;
 import view.SignupView;
+import view.RecipeView;
 import view.ViewManager;
 
 /**
@@ -45,22 +53,19 @@ import view.ViewManager;
  * <p/>
  * This is done by adding each View and then adding related Use Cases.
  */
-// Checkstyle note: you can ignore the "Class Data Abstraction Coupling"
-//                  and the "Class Fan-Out Complexity" issues for this lab; we encourage
-//                  your team to think about ways to refactor the code to resolve these
-//                  if your team decides to work with this as your starter code
-//                  for your final project this term.
+
 
 public class AppBuilder {
     private final JPanel cardPanel = new JPanel();
     private final CardLayout cardLayout = new CardLayout();
-    // thought question: is the hard dependency below a problem?
+
     private final UserFactory userFactory = new CommonUserFactory();
     private final ViewManagerModel viewManagerModel = new ViewManagerModel();
     private final ViewManager viewManager = new ViewManager(cardPanel, cardLayout, viewManagerModel);
 
-    // thought question: is the hard dependency below a problem?
+
     private final InMemoryUserDataAccessObject userDataAccessObject = new InMemoryUserDataAccessObject();
+    private final RecipeDataAccessInterface recipeDAO = new DBRecipeDataAccessObject();
 
     private SignupView signupView;
     private SignupViewModel signupViewModel;
@@ -68,6 +73,8 @@ public class AppBuilder {
     private LoggedInViewModel loggedInViewModel;
     private LoggedInView loggedInView;
     private LoginView loginView;
+    private RecipeView recipeView;
+    private RecipeViewModel recipeViewModel;
 
     public AppBuilder() {
         cardPanel.setLayout(cardLayout);
@@ -107,6 +114,17 @@ public class AppBuilder {
     }
 
     /**
+     * Adds the Recipe View to the application.
+     * @return this builder.
+     */
+    public AppBuilder addRecipeView() {
+        recipeViewModel = new RecipeViewModel();
+        recipeView = new RecipeView(recipeViewModel);
+        cardPanel.add(recipeView, "Gourmet Gateway");
+        return this;
+    }
+
+    /**
      * Adds the Signup Use Case to the application.
      * @return this builder
      */
@@ -126,13 +144,30 @@ public class AppBuilder {
      * @return this builder
      */
     public AppBuilder addLoginUseCase() {
-        final LoginOutputBoundary loginOutputBoundary = new LoginPresenter(viewManagerModel,
-                loggedInViewModel, loginViewModel);
+
+        final LoginPresenter loginPresenter = new LoginPresenter(viewManagerModel, loggedInViewModel, loginViewModel);
+        loginPresenter.setLoginSuccessCallback(() -> cardLayout.show(cardPanel, "Gourmet Gateway"));
+
         final LoginInputBoundary loginInteractor = new LoginInteractor(
-                userDataAccessObject, loginOutputBoundary);
+                userDataAccessObject, loginPresenter);
 
         final LoginController loginController = new LoginController(loginInteractor);
         loginView.setLoginController(loginController);
+        return this;
+    }
+
+    /**
+     * Adds the Recipe search Use Case to the application.
+     * @return this builder
+     */
+    public AppBuilder addRecipeSearchUseCase() {
+        final RecipeOutputBoundary recipeOutputBoundary = new RecipePresenter(recipeViewModel);
+        final RecipeInputBoundary recipeInteractor = new RecipeInteractor(recipeDAO, recipeOutputBoundary);
+        final RecipeController recipeController = new RecipeController(recipeInteractor);
+        if (recipeView == null) {
+            throw new RuntimeException("addRecipeView must be called before addRecipeUseCase");
+        }
+        recipeView.setRecipeController(recipeController);
         return this;
     }
 
@@ -174,7 +209,7 @@ public class AppBuilder {
      * @return the application
      */
     public JFrame build() {
-        final JFrame application = new JFrame("Login Example");
+        final JFrame application = new JFrame("Welcome to Gourmet Gateway");
         application.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         application.add(cardPanel);

@@ -14,6 +14,7 @@ public class LoginPresenter implements LoginOutputBoundary {
     private final LoginViewModel loginViewModel;
     private final LoggedInViewModel loggedInViewModel;
     private final ViewManagerModel viewManagerModel;
+    private Runnable loginSuccessCallback;
 
     public LoginPresenter(ViewManagerModel viewManagerModel,
                           LoggedInViewModel loggedInViewModel,
@@ -21,6 +22,15 @@ public class LoginPresenter implements LoginOutputBoundary {
         this.viewManagerModel = viewManagerModel;
         this.loggedInViewModel = loggedInViewModel;
         this.loginViewModel = loginViewModel;
+    }
+
+    /**
+     * Sets a callback to execute when login succeeds.
+     *
+     * @param callback the callback to execute
+     */
+    public void setLoginSuccessCallback(Runnable callback) {
+        this.loginSuccessCallback = callback;
     }
 
     @Override
@@ -34,6 +44,10 @@ public class LoginPresenter implements LoginOutputBoundary {
 
         this.viewManagerModel.setState(loggedInViewModel.getViewName());
         this.viewManagerModel.firePropertyChanged();
+
+        if (loginSuccessCallback != null) {
+            loginSuccessCallback.run();
+        }
     }
 
     @Override
