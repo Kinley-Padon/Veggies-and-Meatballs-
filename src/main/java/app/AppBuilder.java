@@ -37,6 +37,7 @@ import use_case.change_password.ChangePasswordInputBoundary;
 import use_case.change_password.ChangePasswordInteractor;
 import use_case.change_password.ChangePasswordOutputBoundary;
 import use_case.login.LoginInteractor;
+import use_case.login.LoginOutputBoundary;
 import use_case.logout.LogoutInputBoundary;
 import use_case.logout.LogoutInteractor;
 import use_case.logout.LogoutOutputBoundary;
@@ -76,10 +77,10 @@ public class AppBuilder {
 
     private final InMemoryUserDataAccessObject userDataAccessObject = new InMemoryUserDataAccessObject();
     private final RecipeDataAccessInterface recipeDAO = new DBRecipeDataAccessObject();
-    private final RecipeReviewDataAccessInterface reviewDAO = new FileReviewDataAccessObject("path/to/review.csv"); // Path to review CSV
+    private final RecipeReviewDataAccessInterface reviewDAO = new FileReviewDataAccessObject("/Users/macbookair/Downloads/reviews.csv"); // Path to review CSV
 
     private LoginPresenter loginPresenter;
-    private final LoginInteractor loginInteractor = new LoginInteractor(userDataAccessObject, loginPresenter);
+    private LoginInteractor loginInteractor;
 
     private SignupView signupView;
     private SignupViewModel signupViewModel;
@@ -131,12 +132,25 @@ public class AppBuilder {
         return this;
     }
 
+
+    private void ensureLoginInteractor() {
+        if (loginInteractor == null) {
+            if (loginPresenter == null) {
+                loginPresenter = new LoginPresenter(viewManagerModel, loggedInViewModel, loginViewModel);
+            }
+            loginInteractor = new LoginInteractor(userDataAccessObject, loginPresenter);
+        }
+    }
+
+
     /**
      * Adds the Recipe Review View to the application.
      * @return this builder.
      */
     public AppBuilder addRecipeReviewView() {
         // Create the RecipeReviewView without any additional parameters.
+        //loginInteractor = new LoginInteractor(userDataAccessObject, loginPresenter);
+        ensureLoginInteractor();
         recipeReviewViewModel = new RecipeReviewViewModel();
         recipeReviewView = new RecipeReviewView(recipeReviewViewModel, loginInteractor, userDataAccessObject);
 
@@ -175,7 +189,8 @@ public class AppBuilder {
      * @return this builder
      */
     public AppBuilder addLoginUseCase() {
-        loginPresenter = new LoginPresenter(viewManagerModel, loggedInViewModel, loginViewModel);
+        // loginPresenter = new LoginPresenter(viewManagerModel, loggedInViewModel, loginViewModel);
+        ensureLoginInteractor();
         loginPresenter.setLoginSuccessCallback(() -> cardLayout.show(cardPanel, "Gourmet Gateway"));
 
         final LoginController loginController = new LoginController(loginInteractor);
@@ -259,9 +274,9 @@ public class AppBuilder {
     }
 
     /**
-     * Adds the Add Recipe Use Case to the application.
-     * @return this builder
-     */
+    * Adds the Add Recipe Use Case to the application.
+    * @return this builder
+    */
     public AppBuilder addRecipeAddUseCase() {
         final RecipeAddOutputBoundary recipeOutputBoundary = new RecipeAddPresenter(viewManagerModel, recipeAddViewModel);
 

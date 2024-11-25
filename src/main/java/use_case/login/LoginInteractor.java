@@ -11,6 +11,12 @@ public class LoginInteractor implements LoginInputBoundary {
 
     public LoginInteractor(LoginUserDataAccessInterface userDataAccessInterface,
                            LoginOutputBoundary loginOutputBoundary) {
+        if (userDataAccessInterface == null) {
+            throw new IllegalArgumentException("userDataAccessInterface cannot be null.");
+        }
+        if (loginOutputBoundary == null) {
+            throw new IllegalArgumentException("loginOutputBoundary cannot be null.");
+        }
         this.userDataAccessObject = userDataAccessInterface;
         this.loginPresenter = loginOutputBoundary;
     }
