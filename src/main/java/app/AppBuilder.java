@@ -6,6 +6,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
+import data_access.DBRecipeAddDataAccessObject;
 import data_access.DBRecipeDataAccessObject;
 import data_access.FileReviewDataAccessObject;
 import data_access.InMemoryUserDataAccessObject;
@@ -23,6 +24,9 @@ import interface_adapter.logout.LogoutPresenter;
 import interface_adapter.recipe_review.RecipeReviewController;
 import interface_adapter.recipe_review.RecipeReviewPresenter;
 import interface_adapter.recipe_review.RecipeReviewViewModel;
+import interface_adapter.recipe_add.RecipeAddController;
+import interface_adapter.recipe_add.RecipeAddPresenter;
+import interface_adapter.recipe_add.RecipeAddViewModel;
 import interface_adapter.signup.SignupController;
 import interface_adapter.signup.SignupPresenter;
 import interface_adapter.signup.SignupViewModel;
@@ -40,6 +44,10 @@ import use_case.recipe_review.RecipeReviewDataAccessInterface;
 import use_case.recipe_review.RecipeReviewInputBoundary;
 import use_case.recipe_review.RecipeReviewInteractor;
 import use_case.recipe_review.RecipeReviewOutputBoundary;
+import use_case.recipe_add.RecipeAddDataAccessInterface;
+import use_case.recipe_add.RecipeAddInputBoundary;
+import use_case.recipe_add.RecipeAddInteractor;
+import use_case.recipe_add.RecipeAddOutputBoundary;
 import use_case.recipe_search.RecipeInputBoundary;
 import use_case.signup.SignupInputBoundary;
 import use_case.signup.SignupInteractor;
@@ -82,6 +90,8 @@ public class AppBuilder {
     private RecipeView recipeView;
     private RecipeReviewViewModel recipeReviewViewModel;
     private RecipeViewModel recipeViewModel;
+    private RecipeAddViewModel recipeAddViewModel;
+    private RecipeAddDataAccessInterface recipeAddDAO = new DBRecipeAddDataAccessObject();
     private RecipeReviewView recipeReviewView;
 
     public AppBuilder() {
@@ -246,5 +256,24 @@ public class AppBuilder {
         viewManagerModel.firePropertyChanged();
 
         return application;
+    }
+
+    /**
+     * Adds the Add Recipe Use Case to the application.
+     * @return this builder
+     */
+    public AppBuilder addRecipeAddUseCase() {
+        final RecipeAddOutputBoundary recipeOutputBoundary = new RecipeAddPresenter(viewManagerModel, recipeAddViewModel);
+
+        final RecipeAddInputBoundary recipeInteractor = new RecipeAddInteractor(recipeOutputBoundary, recipeAddDAO);
+
+        final RecipeAddController recipeAddController = new RecipeAddController(recipeInteractor);
+
+        if (recipeView == null) {
+            throw new RuntimeException("addRecipeView must be called before addRecipeUseCase");
+        }
+        recipeView.setRecipeAddController(recipeAddController);
+
+        return this;
     }
 }
