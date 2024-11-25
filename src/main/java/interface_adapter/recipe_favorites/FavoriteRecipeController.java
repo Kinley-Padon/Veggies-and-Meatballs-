@@ -1,24 +1,20 @@
 package interface_adapter.recipe_favorites;
 
-import entities.Recipes;
 import use_case.recipe_favorites.FavoriteRecipeInputBoundary;
+import entities.Recipes;
 
 public class FavoriteRecipeController {
-    private final FavoriteRecipeInputBoundary inputBoundary;
+    private final FavoriteRecipeInputBoundary interactor;
 
-    public FavoriteRecipeController(FavoriteRecipeInputBoundary inputBoundary) {
-        this.inputBoundary = inputBoundary;
+    public FavoriteRecipeController(FavoriteRecipeInputBoundary interactor) {
+        this.interactor = interactor;
     }
 
     public void addRecipeToFavorites(Recipes recipe) {
-        inputBoundary.addRecipeToFavorites(recipe);
+        interactor.addToFavorites(recipe);  // Calls the method from the input boundary
     }
 
-    public void removeRecipeFromFavorites(Recipes recipe) {
-        inputBoundary.removeRecipeFromFavorites(recipe);
-    }
-
-    public void showFavoriteRecipes() {
-        inputBoundary.getFavoriteRecipes();
+    public void viewFavoriteRecipes() {
+        interactor.viewFavorites();  // Calls the method from the input boundary
     }
 }

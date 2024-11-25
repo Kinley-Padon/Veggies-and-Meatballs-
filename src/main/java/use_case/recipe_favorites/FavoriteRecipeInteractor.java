@@ -1,40 +1,27 @@
 package use_case.recipe_favorites;
 
 import entities.Recipes;
-import java.util.Set;
+import use_case.recipe_favorites.FavoriteRecipeInputBoundary;
+import use_case.recipe_favorites.FavoriteRecipeOutputBoundary;
+import data_access.FavoriteRecipeDataAccessObject;
 
 public class FavoriteRecipeInteractor implements FavoriteRecipeInputBoundary {
-    private final FavoriteRecipeDataAccessInterface dataAccess;
+    private final FavoriteRecipeDataAccessObject favoriteRecipeDAO;
     private final FavoriteRecipeOutputBoundary outputBoundary;
 
-    public FavoriteRecipeInteractor(FavoriteRecipeDataAccessInterface dataAccess,
-                                    FavoriteRecipeOutputBoundary outputBoundary) {
-        this.dataAccess = dataAccess;
+    public FavoriteRecipeInteractor(FavoriteRecipeDataAccessObject favoriteRecipeDAO, FavoriteRecipeOutputBoundary outputBoundary) {
+        this.favoriteRecipeDAO = favoriteRecipeDAO;
         this.outputBoundary = outputBoundary;
     }
 
     @Override
-    public void addRecipeToFavorites(Recipes recipe) {
-        try {
-            dataAccess.addFavoriteRecipe(recipe);
-            outputBoundary.presentFavoriteRecipes(dataAccess.getFavoriteRecipes());
-        } catch (Exception e) {
-            outputBoundary.presentFavoriteError("Failed to add recipe to favorites: " + e.getMessage());
-        }
+    public void addToFavorites(Recipes recipe) {
+        favoriteRecipeDAO.addToFavorites(recipe);  // Add recipe to the favorites in DAO
+        outputBoundary.showFavoriteAddedMessage();  // Call the method in the presenter to notify success
     }
 
     @Override
-    public void removeRecipeFromFavorites(Recipes recipe) {
-        try {
-            dataAccess.removeFavoriteRecipe(recipe);
-            outputBoundary.presentFavoriteRecipes(dataAccess.getFavoriteRecipes());
-        } catch (Exception e) {
-            outputBoundary.presentFavoriteError("Failed to remove recipe from favorites: " + e.getMessage());
-        }
-    }
-
-    @Override
-    public Set<Recipes> getFavoriteRecipes() {
-        return dataAccess.getFavoriteRecipes();
+    public void viewFavorites() {
+        outputBoundary.presentFavoriteRecipes(favoriteRecipeDAO.getFavoriteRecipes());  // Show favorite recipes
     }
 }
