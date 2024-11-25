@@ -14,7 +14,7 @@ public class Recipes{
     private final int id;
     private final String name;
     private String description;
-    private String ingredients;
+    private List<Ingredient> ingredients;
     private String image;
     private List<Review> reviews;
 
