@@ -1,9 +1,12 @@
 package view;
 
 import entities.Recipes;
+import interface_adapter.recipe_add.RecipeAddController;
+import interface_adapter.recipe_add.RecipeAddViewModel;
 import interface_adapter.recipe_search.RecipeController;
 import interface_adapter.recipe_search.RecipeState;
 import interface_adapter.recipe_search.RecipeViewModel;
+import use_case.recipe_add.RecipeAddDataAccessInterface;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,10 +23,13 @@ import java.beans.PropertyChangeListener;
 public class RecipeView extends JPanel implements ActionListener, PropertyChangeListener {
 
     private final RecipeViewModel recipeViewModel;
+    private RecipeAddController recipeAddController;
+    private final RecipeAddViewModel recipeAddViewModel;
 
     private final JLabel recipeNameLabel = new JLabel("Enter Recipe Name:");
     private final JTextArea recipeInputField = new JTextArea(1, 20); // Single-line input for recipe name
     private final JButton searchButton = new JButton("Search");
+    private final JButton addRecipeButton = new JButton("Add Recipe");
     private final JLabel allergenNameLabel = new JLabel("Enter Allergen:");
     private final JTextArea allergenInputField = new JTextArea(1, 20); // Single-line input for recipe name
 
@@ -41,6 +47,8 @@ public class RecipeView extends JPanel implements ActionListener, PropertyChange
         this.recipeViewModel = recipeViewModel;
         this.recipeViewModel.addPropertyChangeListener(this);
 
+        this.recipeAddViewModel = new RecipeAddViewModel();
+
         recipeNameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -56,6 +64,11 @@ public class RecipeView extends JPanel implements ActionListener, PropertyChange
                     }
                 }
         );
+        addRecipeButton.addActionListener(evt -> {
+            if (evt.getSource().equals(addRecipeButton)) {
+                openAddRecipeDialog();
+            }
+        });
 
         recipeResultsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         recipeResultsList.addMouseListener(new MouseAdapter() {
@@ -71,12 +84,15 @@ public class RecipeView extends JPanel implements ActionListener, PropertyChange
             }
         });
 
+
+
         JScrollPane recipeResultsScrollPane = new JScrollPane(recipeResultsList);
         this.add(recipeNameLabel);
         this.add(recipeInputField);
         this.add(allergenNameLabel);
         this.add(allergenInputField);
         this.add(searchButton);
+        this.add(addRecipeButton);
         this.add(new JLabel("Search Results:"));
         this.add(recipeResultsScrollPane);
     }
@@ -136,12 +152,20 @@ public class RecipeView extends JPanel implements ActionListener, PropertyChange
         }
     }
 
-    /**
-     * Sets the controller for handling recipe actions.
-     *
-     * @param controller The RecipeController to set.
-     */
-    public void setRecipeController(RecipeController controller) {
-        this.recipeController = controller;
+    private void openAddRecipeDialog() {
+        RecipeAddDialog dialog = new RecipeAddDialog(recipeAddViewModel);
+        dialog.setVisible(true);
+    }
+
+    public String getViewName() {
+        return "Recipe View";
+    }
+
+    public void setRecipeAddController(RecipeAddController controller) {
+        this.recipeAddController = controller;
+    }
+
+    public void setRecipeController(RecipeController recipeController) {
+        this.recipeController = recipeController;
     }
 }
