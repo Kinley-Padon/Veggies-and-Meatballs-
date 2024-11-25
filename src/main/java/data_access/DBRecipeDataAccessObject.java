@@ -37,9 +37,7 @@ public class DBRecipeDataAccessObject implements RecipeDataAccessInterface {
 
     @Override
     public List<Recipes> searchRecipe(final String userInput) throws RecipeDataAccessException {
-        // Build the request URL
         String url = API_URL + "?query=" + userInput + "&apiKey=" + this.apiKey;
-        // Execute the request
         return getRecipesFromApi(new Request.Builder()
                 .url(url)
                 .get()
@@ -47,7 +45,7 @@ public class DBRecipeDataAccessObject implements RecipeDataAccessInterface {
     }
 
     public List<Recipes> searchRecipe(final String recipe, final String allergen) throws RecipeDataAccessException {
-        // Build the request URL
+
         String url = String.format("%s?query=%s&apiKey=%s&excludeIngredients=%s", API_URL, recipe, apiKey, allergen);
         return getRecipesFromApi(new Request.Builder()
                 .url(url)
@@ -110,7 +108,7 @@ public class DBRecipeDataAccessObject implements RecipeDataAccessInterface {
                 double value = metricAmount.getDouble("value");
                 String unit = metricAmount.getString("unit");
 
-                ingredients.add(new Ingredient(name, image, value, unit));
+                ingredients.add(new Ingredient(name, value, unit));
             }
             return ingredients;
 
