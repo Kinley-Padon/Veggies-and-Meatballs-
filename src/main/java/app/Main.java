@@ -22,6 +22,7 @@ public class Main {
                                             .addChangePasswordUseCase()
                                             .addLogoutUseCase()
                                             .addRecipeSearchUseCase()
+                                            .addRecipeAddUseCase()
                                             .build();
 
         application.pack();

@@ -6,6 +6,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
+import data_access.DBRecipeAddDataAccessObject;
 import data_access.DBRecipeDataAccessObject;
 import data_access.InMemoryUserDataAccessObject;
 import entities.CommonUserFactory;
@@ -19,6 +20,9 @@ import interface_adapter.login.LoginPresenter;
 import interface_adapter.login.LoginViewModel;
 import interface_adapter.logout.LogoutController;
 import interface_adapter.logout.LogoutPresenter;
+import interface_adapter.recipe_add.RecipeAddController;
+import interface_adapter.recipe_add.RecipeAddPresenter;
+import interface_adapter.recipe_add.RecipeAddViewModel;
 import interface_adapter.signup.SignupController;
 import interface_adapter.signup.SignupPresenter;
 import interface_adapter.signup.SignupViewModel;
@@ -33,7 +37,10 @@ import use_case.login.LoginInteractor;
 import use_case.logout.LogoutInputBoundary;
 import use_case.logout.LogoutInteractor;
 import use_case.logout.LogoutOutputBoundary;
-import use_case.logout.LogoutUserDataAccessInterface;
+import use_case.recipe_add.RecipeAddDataAccessInterface;
+import use_case.recipe_add.RecipeAddInputBoundary;
+import use_case.recipe_add.RecipeAddInteractor;
+import use_case.recipe_add.RecipeAddOutputBoundary;
 import use_case.recipe_search.RecipeInputBoundary;
 import use_case.signup.SignupInputBoundary;
 import use_case.signup.SignupInteractor;
@@ -75,6 +82,8 @@ public class AppBuilder {
     private LoginView loginView;
     private RecipeView recipeView;
     private RecipeViewModel recipeViewModel;
+    private RecipeAddViewModel recipeAddViewModel;
+    private RecipeAddDataAccessInterface recipeAddDAO = new DBRecipeAddDataAccessObject();
 
     public AppBuilder() {
         cardPanel.setLayout(cardLayout);
@@ -218,5 +227,24 @@ public class AppBuilder {
         viewManagerModel.firePropertyChanged();
 
         return application;
+    }
+
+    /**
+     * Adds the Add Recipe Use Case to the application.
+     * @return this builder
+     */
+    public AppBuilder addRecipeAddUseCase() {
+        final RecipeAddOutputBoundary recipeOutputBoundary = new RecipeAddPresenter(viewManagerModel, recipeAddViewModel);
+
+        final RecipeAddInputBoundary recipeInteractor = new RecipeAddInteractor(recipeOutputBoundary, recipeAddDAO);
+
+        final RecipeAddController recipeAddController = new RecipeAddController(recipeInteractor);
+
+        if (recipeView == null) {
+            throw new RuntimeException("addRecipeView must be called before addRecipeUseCase");
+        }
+        recipeView.setRecipeAddController(recipeAddController);
+
+        return this;
     }
 }

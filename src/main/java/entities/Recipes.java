@@ -1,5 +1,7 @@
 package entities;
 
+import java.util.List;
+
 /**
  * Represents a recipe with its ID, name and image.
  */
@@ -9,7 +11,7 @@ public class Recipes{
     private final int id;
     private final String name;
     private String description;
-    private String ingredients;
+    private List<Ingredient> ingredients;
     private String image;
 
 
@@ -17,6 +19,13 @@ public class Recipes{
         this.id = ID;
         this.name = Name;
         this.image = image;
+    }
+
+    public Recipes(int id, String name, List<Ingredient> ingredients, String description) {
+        this.id = id;
+        this.name = name;
+        this.ingredients = ingredients;
+        this.description = description;
     }
 
     public String getName(){
@@ -48,11 +57,11 @@ public class Recipes{
         this.description = description;
     }
 
-    public String getIngredients() {
+    public List<Ingredient> getIngredients() {
         return ingredients;
     }
 
-    public void setIngredients(String ingredients) {
+    public void setIngredients(List<Ingredient> ingredients) {
         this.ingredients = ingredients;
     }
 }
