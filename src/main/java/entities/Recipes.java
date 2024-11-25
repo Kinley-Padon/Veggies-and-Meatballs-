@@ -1,5 +1,8 @@
 package entities;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import java.util.List;
 
 /**
@@ -11,14 +14,15 @@ public class Recipes{
     private final int id;
     private final String name;
     private String description;
-    private List<Ingredient> ingredients;
+    private String ingredients;
     private String image;
-
+    private List<Review> reviews;
 
     public Recipes(int ID, String Name, String image){
         this.id = ID;
         this.name = Name;
         this.image = image;
+        this.reviews = new ArrayList<>();
     }
 
     public Recipes(int id, String name, List<Ingredient> ingredients, String description) {
@@ -63,5 +67,9 @@ public class Recipes{
 
     public void setIngredients(List<Ingredient> ingredients) {
         this.ingredients = ingredients;
+    }
+
+    public List<Review> getReviews() {
+        return reviews;
     }
 }

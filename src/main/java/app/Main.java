@@ -16,11 +16,13 @@ public class Main {
                                             .addLoginView()
                                             .addSignupView()
                                             .addLoggedInView()
+                                            .addRecipeReviewView()
                                             .addRecipeView()
                                             .addSignupUseCase()
                                             .addLoginUseCase()
                                             .addChangePasswordUseCase()
                                             .addLogoutUseCase()
+                                            .addRecipeReviewUseCase()
                                             .addRecipeSearchUseCase()
                                             .addRecipeAddUseCase()
                                             .build();

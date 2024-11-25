@@ -8,6 +8,7 @@ import javax.swing.WindowConstants;
 
 import data_access.DBRecipeAddDataAccessObject;
 import data_access.DBRecipeDataAccessObject;
+import data_access.FileReviewDataAccessObject;
 import data_access.InMemoryUserDataAccessObject;
 import entities.CommonUserFactory;
 import entities.UserFactory;
@@ -20,6 +21,9 @@ import interface_adapter.login.LoginPresenter;
 import interface_adapter.login.LoginViewModel;
 import interface_adapter.logout.LogoutController;
 import interface_adapter.logout.LogoutPresenter;
+import interface_adapter.recipe_review.RecipeReviewController;
+import interface_adapter.recipe_review.RecipeReviewPresenter;
+import interface_adapter.recipe_review.RecipeReviewViewModel;
 import interface_adapter.recipe_add.RecipeAddController;
 import interface_adapter.recipe_add.RecipeAddPresenter;
 import interface_adapter.recipe_add.RecipeAddViewModel;
@@ -32,11 +36,14 @@ import interface_adapter.recipe_search.RecipeViewModel;
 import use_case.change_password.ChangePasswordInputBoundary;
 import use_case.change_password.ChangePasswordInteractor;
 import use_case.change_password.ChangePasswordOutputBoundary;
-import use_case.login.LoginInputBoundary;
 import use_case.login.LoginInteractor;
 import use_case.logout.LogoutInputBoundary;
 import use_case.logout.LogoutInteractor;
 import use_case.logout.LogoutOutputBoundary;
+import use_case.recipe_review.RecipeReviewDataAccessInterface;
+import use_case.recipe_review.RecipeReviewInputBoundary;
+import use_case.recipe_review.RecipeReviewInteractor;
+import use_case.recipe_review.RecipeReviewOutputBoundary;
 import use_case.recipe_add.RecipeAddDataAccessInterface;
 import use_case.recipe_add.RecipeAddInputBoundary;
 import use_case.recipe_add.RecipeAddInteractor;
@@ -48,11 +55,7 @@ import use_case.signup.SignupOutputBoundary;
 import use_case.recipe_search.RecipeDataAccessInterface;
 import use_case.recipe_search.RecipeInteractor;
 import use_case.recipe_search.RecipeOutputBoundary;
-import view.LoggedInView;
-import view.LoginView;
-import view.SignupView;
-import view.RecipeView;
-import view.ViewManager;
+import view.*;
 
 /**
  * The AppBuilder class is responsible for putting together the pieces of
@@ -73,6 +76,10 @@ public class AppBuilder {
 
     private final InMemoryUserDataAccessObject userDataAccessObject = new InMemoryUserDataAccessObject();
     private final RecipeDataAccessInterface recipeDAO = new DBRecipeDataAccessObject();
+    private final RecipeReviewDataAccessInterface reviewDAO = new FileReviewDataAccessObject("path/to/review.csv"); // Path to review CSV
+
+    private LoginPresenter loginPresenter;
+    private final LoginInteractor loginInteractor = new LoginInteractor(userDataAccessObject, loginPresenter);
 
     private SignupView signupView;
     private SignupViewModel signupViewModel;
@@ -81,9 +88,11 @@ public class AppBuilder {
     private LoggedInView loggedInView;
     private LoginView loginView;
     private RecipeView recipeView;
+    private RecipeReviewViewModel recipeReviewViewModel;
     private RecipeViewModel recipeViewModel;
     private RecipeAddViewModel recipeAddViewModel;
     private RecipeAddDataAccessInterface recipeAddDAO = new DBRecipeAddDataAccessObject();
+    private RecipeReviewView recipeReviewView;
 
     public AppBuilder() {
         cardPanel.setLayout(cardLayout);
@@ -123,6 +132,19 @@ public class AppBuilder {
     }
 
     /**
+     * Adds the Recipe Review View to the application.
+     * @return this builder.
+     */
+    public AppBuilder addRecipeReviewView() {
+        // Create the RecipeReviewView without any additional parameters.
+        recipeReviewViewModel = new RecipeReviewViewModel();
+        recipeReviewView = new RecipeReviewView(recipeReviewViewModel, loginInteractor, userDataAccessObject);
+
+        cardPanel.add(recipeReviewView, "Recipe Review");
+        return this;
+    }
+
+    /**
      * Adds the Recipe View to the application.
      * @return this builder.
      */
@@ -153,15 +175,22 @@ public class AppBuilder {
      * @return this builder
      */
     public AppBuilder addLoginUseCase() {
-
-        final LoginPresenter loginPresenter = new LoginPresenter(viewManagerModel, loggedInViewModel, loginViewModel);
+        loginPresenter = new LoginPresenter(viewManagerModel, loggedInViewModel, loginViewModel);
         loginPresenter.setLoginSuccessCallback(() -> cardLayout.show(cardPanel, "Gourmet Gateway"));
-
-        final LoginInputBoundary loginInteractor = new LoginInteractor(
-                userDataAccessObject, loginPresenter);
 
         final LoginController loginController = new LoginController(loginInteractor);
         loginView.setLoginController(loginController);
+        return this;
+    }
+
+    public AppBuilder addRecipeReviewUseCase() {
+        final RecipeReviewOutputBoundary recipeReviewOutputBoundary = new RecipeReviewPresenter(recipeReviewViewModel);
+        final RecipeReviewInputBoundary recipeReviewInteractor = new RecipeReviewInteractor(reviewDAO, recipeReviewOutputBoundary);
+
+        // Create the RecipeReviewController and link it with the RecipeReviewView
+        final RecipeReviewController recipeReviewController = new RecipeReviewController(recipeReviewInteractor);
+        recipeReviewView.setRecipeReviewController(recipeReviewController);
+
         return this;
     }
 
