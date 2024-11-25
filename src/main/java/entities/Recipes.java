@@ -3,8 +3,6 @@ package entities;
 import java.util.ArrayList;
 import java.util.List;
 
-import java.util.List;
-
 /**
  * Represents a recipe with its ID, name and image.
  */
