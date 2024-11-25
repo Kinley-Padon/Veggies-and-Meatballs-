@@ -4,25 +4,33 @@ public class Review {
 
     private CommonUser user;
     private String content;
-    private Recipes recipe;
+    private String recipeName;
 
-    public Review(CommonUser user, String content, Recipes recipe) {
+    public Review(CommonUser user, String content, String recipeName) {
         this.user = user;
         this.content = content;
-        this.recipe = recipe;
+        this.recipeName = recipeName;
     }
 
     public CommonUser getUser() {
         return user;
     }
 
+    public String getRecipeName() {
+        return recipeName;
+    }
+
     public String getContent() {
         return content;
     }
 
+    public void setContent(String content) {
+        this.content = content;
+    }
+
     @Override
     public String toString() {
-        return recipe.getName() + "\n" + user.getName() + ": " + content;
+        return recipeName + "\n" + user.getName() + ": " + content;
     }
 
 }

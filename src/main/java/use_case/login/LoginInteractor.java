@@ -37,4 +37,8 @@ public class LoginInteractor implements LoginInputBoundary {
             }
         }
     }
+
+    public String getCurrentUsername() {
+        return userDataAccessObject.getCurrentUsername();
+    }
 }
