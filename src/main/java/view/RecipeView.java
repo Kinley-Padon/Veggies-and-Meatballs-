@@ -50,7 +50,6 @@ public class RecipeView extends JPanel implements ActionListener, PropertyChange
     public RecipeView(RecipeViewModel recipeViewModel, FavoriteRecipeController favoriteRecipeController) {
         this.recipeViewModel = recipeViewModel;
         this.recipeViewModel.addPropertyChangeListener(this);
-
         this.favoriteRecipeController = favoriteRecipeController;
         this.recipeAddViewModel = new RecipeAddViewModel();
 
@@ -69,6 +68,11 @@ public class RecipeView extends JPanel implements ActionListener, PropertyChange
                     }
                 }
         );
+        addRecipeButton.addActionListener(evt -> {
+            if (evt.getSource().equals(addRecipeButton)) {
+                openAddRecipeDialog();
+            }
+        });
 
         addRecipeButton.addActionListener(evt -> {
             if (evt.getSource().equals(addRecipeButton)) {
@@ -100,6 +104,8 @@ public class RecipeView extends JPanel implements ActionListener, PropertyChange
                 }
             }
         });
+
+
 
         JScrollPane recipeResultsScrollPane = new JScrollPane(recipeResultsList);
         this.add(recipeNameLabel);
