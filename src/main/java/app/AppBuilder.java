@@ -37,7 +37,6 @@ import use_case.change_password.ChangePasswordInputBoundary;
 import use_case.change_password.ChangePasswordInteractor;
 import use_case.change_password.ChangePasswordOutputBoundary;
 import use_case.login.LoginInteractor;
-import use_case.login.LoginOutputBoundary;
 import use_case.logout.LogoutInputBoundary;
 import use_case.logout.LogoutInteractor;
 import use_case.logout.LogoutOutputBoundary;
@@ -97,6 +96,8 @@ public class AppBuilder {
 
     public AppBuilder() {
         cardPanel.setLayout(cardLayout);
+        System.out.println("UserDataAccessObject instance: " + userDataAccessObject);
+
     }
 
     /**
@@ -148,11 +149,9 @@ public class AppBuilder {
      * @return this builder.
      */
     public AppBuilder addRecipeReviewView() {
-        // Create the RecipeReviewView without any additional parameters.
-        //loginInteractor = new LoginInteractor(userDataAccessObject, loginPresenter);
         ensureLoginInteractor();
         recipeReviewViewModel = new RecipeReviewViewModel();
-        recipeReviewView = new RecipeReviewView(recipeReviewViewModel, loginInteractor, userDataAccessObject);
+        recipeReviewView = new RecipeReviewView(recipeReviewViewModel, getLoginInteractor(), getUserDataAccessObject());
 
         cardPanel.add(recipeReviewView, "Recipe Review");
         return this;
@@ -189,24 +188,36 @@ public class AppBuilder {
      * @return this builder
      */
     public AppBuilder addLoginUseCase() {
-        // loginPresenter = new LoginPresenter(viewManagerModel, loggedInViewModel, loginViewModel);
+
         ensureLoginInteractor();
         loginPresenter.setLoginSuccessCallback(() -> cardLayout.show(cardPanel, "Gourmet Gateway"));
-
+        System.out.println("UserDataAccessObject instance: " + userDataAccessObject);
         final LoginController loginController = new LoginController(loginInteractor);
         loginView.setLoginController(loginController);
         return this;
+
     }
 
     public AppBuilder addRecipeReviewUseCase() {
         final RecipeReviewOutputBoundary recipeReviewOutputBoundary = new RecipeReviewPresenter(recipeReviewViewModel);
         final RecipeReviewInputBoundary recipeReviewInteractor = new RecipeReviewInteractor(reviewDAO, recipeReviewOutputBoundary);
-
+        System.out.println("UserDataAccessObject instance: " + userDataAccessObject);
         // Create the RecipeReviewController and link it with the RecipeReviewView
         final RecipeReviewController recipeReviewController = new RecipeReviewController(recipeReviewInteractor);
         recipeReviewView.setRecipeReviewController(recipeReviewController);
 
         return this;
+    }
+
+    /**
+     * Get the RecipeReviewViewModel for the Recipe Review View.
+     * @return the RecipeReviewViewModel
+     */
+    public RecipeReviewViewModel getRecipeReviewViewModel() {
+        if (recipeReviewViewModel == null) {
+            recipeReviewViewModel = new RecipeReviewViewModel();
+        }
+        return recipeReviewViewModel;
     }
 
     /**
@@ -291,4 +302,20 @@ public class AppBuilder {
 
         return this;
     }
+
+    public LoginInteractor getLoginInteractor() {
+        ensureLoginInteractor();
+        return loginInteractor;
+    }
+
+    public InMemoryUserDataAccessObject getUserDataAccessObject() {
+        return userDataAccessObject;
+    }
+
+    public RecipeReviewController getRecipeReviewController() {
+        RecipeReviewPresenter recipeReviewPresenter = new RecipeReviewPresenter(recipeReviewViewModel);
+        RecipeReviewInteractor recipeReviewInteractor = new RecipeReviewInteractor(reviewDAO, recipeReviewPresenter);
+        return new RecipeReviewController(recipeReviewInteractor);
+    }
+
 }
