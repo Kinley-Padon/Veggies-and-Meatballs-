@@ -86,10 +86,10 @@ public class AppBuilder {
 
     private final InMemoryUserDataAccessObject userDataAccessObject = new InMemoryUserDataAccessObject();
     private final RecipeDataAccessInterface recipeDAO = new DBRecipeDataAccessObject();
-    private final RecipeReviewDataAccessInterface reviewDAO = new FileReviewDataAccessObject("path/to/review.csv"); // Path to review CSV
+    private final RecipeReviewDataAccessInterface reviewDAO = new FileReviewDataAccessObject("/Users/macbookair/Downloads/reviews.csv"); // Path to review CSV
 
     private LoginPresenter loginPresenter;
-    private final LoginInteractor loginInteractor = new LoginInteractor(userDataAccessObject, loginPresenter);
+    private LoginInteractor loginInteractor;
 
     private SignupView signupView;
     private SignupViewModel signupViewModel;
@@ -106,6 +106,8 @@ public class AppBuilder {
 
     public AppBuilder() {
         cardPanel.setLayout(cardLayout);
+        System.out.println("UserDataAccessObject instance: " + userDataAccessObject);
+
     }
 
     /**
@@ -150,6 +152,15 @@ public class AppBuilder {
         return this;
     }
 
+    private void ensureLoginInteractor() {
+        if (loginInteractor == null) {
+            if (loginPresenter == null) {
+                loginPresenter = new LoginPresenter(viewManagerModel, loggedInViewModel, loginViewModel);
+            }
+            loginInteractor = new LoginInteractor(userDataAccessObject, loginPresenter);
+        }
+    }
+
 //    public AppBuilder addLoggedInView() {
 //        loggedInViewModel = new LoggedInViewModel();
 //        loggedInView = new LoggedInView(loggedInViewModel);
@@ -162,9 +173,9 @@ public class AppBuilder {
      * @return this builder.
      */
     public AppBuilder addRecipeReviewView() {
-        // Create the RecipeReviewView without any additional parameters.
+        ensureLoginInteractor();
         recipeReviewViewModel = new RecipeReviewViewModel();
-        recipeReviewView = new RecipeReviewView(recipeReviewViewModel, loginInteractor, userDataAccessObject);
+        recipeReviewView = new RecipeReviewView(recipeReviewViewModel, getLoginInteractor(), getUserDataAccessObject());
 
         cardPanel.add(recipeReviewView, "Recipe Review");
         return this;
@@ -239,23 +250,36 @@ public AppBuilder addRecipeView() {
      * @return this builder
      */
     public AppBuilder addLoginUseCase() {
-        loginPresenter = new LoginPresenter(viewManagerModel, loggedInViewModel, loginViewModel);
-        loginPresenter.setLoginSuccessCallback(() -> cardLayout.show(cardPanel, "Gourmet Gateway"));
 
+        ensureLoginInteractor();
+        loginPresenter.setLoginSuccessCallback(() -> cardLayout.show(cardPanel, "Gourmet Gateway"));
+        System.out.println("UserDataAccessObject instance: " + userDataAccessObject);
         final LoginController loginController = new LoginController(loginInteractor);
         loginView.setLoginController(loginController);
         return this;
+
     }
 
     public AppBuilder addRecipeReviewUseCase() {
         final RecipeReviewOutputBoundary recipeReviewOutputBoundary = new RecipeReviewPresenter(recipeReviewViewModel);
         final RecipeReviewInputBoundary recipeReviewInteractor = new RecipeReviewInteractor(reviewDAO, recipeReviewOutputBoundary);
-
+        System.out.println("UserDataAccessObject instance: " + userDataAccessObject);
         // Create the RecipeReviewController and link it with the RecipeReviewView
         final RecipeReviewController recipeReviewController = new RecipeReviewController(recipeReviewInteractor);
         recipeReviewView.setRecipeReviewController(recipeReviewController);
 
         return this;
+    }
+
+    /**
+     * Get the RecipeReviewViewModel for the Recipe Review View.
+     * @return the RecipeReviewViewModel
+     */
+    public RecipeReviewViewModel getRecipeReviewViewModel() {
+        if (recipeReviewViewModel == null) {
+            recipeReviewViewModel = new RecipeReviewViewModel();
+        }
+        return recipeReviewViewModel;
     }
 
     /**
@@ -323,9 +347,9 @@ public AppBuilder addRecipeView() {
     }
 
     /**
-     * Adds the Add Recipe Use Case to the application.
-     * @return this builder
-     */
+    * Adds the Add Recipe Use Case to the application.
+    * @return this builder
+    */
     public AppBuilder addRecipeAddUseCase() {
         final RecipeAddOutputBoundary recipeOutputBoundary = new RecipeAddPresenter(viewManagerModel, recipeAddViewModel);
 
@@ -340,4 +364,20 @@ public AppBuilder addRecipeView() {
 
         return this;
     }
+
+    public LoginInteractor getLoginInteractor() {
+        ensureLoginInteractor();
+        return loginInteractor;
+    }
+
+    public InMemoryUserDataAccessObject getUserDataAccessObject() {
+        return userDataAccessObject;
+    }
+
+    public RecipeReviewController getRecipeReviewController() {
+        RecipeReviewPresenter recipeReviewPresenter = new RecipeReviewPresenter(recipeReviewViewModel);
+        RecipeReviewInteractor recipeReviewInteractor = new RecipeReviewInteractor(reviewDAO, recipeReviewPresenter);
+        return new RecipeReviewController(recipeReviewInteractor);
+    }
+
 }

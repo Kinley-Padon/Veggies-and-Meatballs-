@@ -3,7 +3,6 @@ package data_access;
 import entities.CommonUser;
 import entities.Review;
 import entities.Recipes;
-import use_case.recipe_review.RecipeReviewDataAccessException;
 import use_case.recipe_review.RecipeReviewDataAccessInterface;
 
 import java.io.*;
@@ -20,7 +19,7 @@ public class FileReviewDataAccessObject implements RecipeReviewDataAccessInterfa
     private final File csvFile;
     private final Map<String, List<Review>> recipeReviews = new HashMap<>();
 
-    public FileReviewDataAccessObject(String csvPath) throws RecipeReviewDataAccessException {
+    public FileReviewDataAccessObject(String csvPath)  {
         csvFile = new File(csvPath);
 
         try {
@@ -31,7 +30,7 @@ public class FileReviewDataAccessObject implements RecipeReviewDataAccessInterfa
                 load();
             }
         } catch (IOException e) {
-            throw new RecipeReviewDataAccessException("Error initializing review file: " + e.getMessage());
+            System.err.println("Error initializing or accessing review file: " + e.getMessage());
         }
     }
 
@@ -80,6 +79,8 @@ public class FileReviewDataAccessObject implements RecipeReviewDataAccessInterfa
                     writer.newLine();
                 }
             }
+        } catch (IOException e) {
+            System.err.println("Error saving reviews to file: " + e.getMessage());
         }
     }
 
