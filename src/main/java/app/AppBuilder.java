@@ -74,7 +74,7 @@ public class AppBuilder {
     private final ViewManager viewManager = new ViewManager(cardPanel, cardLayout, viewManagerModel);
 
 
-    private final InMemoryUserDataAccessObject userDataAccessObject = new InMemoryUserDataAccessObject();
+    private final InMemoryUserDataAccessObject userDataAccessObject = InMemoryUserDataAccessObject.getInstance();
     private final RecipeDataAccessInterface recipeDAO = new DBRecipeDataAccessObject();
     private final RecipeReviewDataAccessInterface reviewDAO = new FileReviewDataAccessObject("/Users/macbookair/Downloads/reviews.csv"); // Path to review CSV
 
@@ -163,7 +163,7 @@ public class AppBuilder {
      */
     public AppBuilder addRecipeView() {
         recipeViewModel = new RecipeViewModel();
-        recipeView = new RecipeView(recipeViewModel);
+        recipeView = new RecipeView(recipeViewModel, this);
         cardPanel.add(recipeView, "Gourmet Gateway");
         return this;
     }
@@ -201,8 +201,7 @@ public class AppBuilder {
     public AppBuilder addRecipeReviewUseCase() {
         final RecipeReviewOutputBoundary recipeReviewOutputBoundary = new RecipeReviewPresenter(recipeReviewViewModel);
         final RecipeReviewInputBoundary recipeReviewInteractor = new RecipeReviewInteractor(reviewDAO, recipeReviewOutputBoundary);
-        System.out.println("UserDataAccessObject instance: " + userDataAccessObject);
-        // Create the RecipeReviewController and link it with the RecipeReviewView
+
         final RecipeReviewController recipeReviewController = new RecipeReviewController(recipeReviewInteractor);
         recipeReviewView.setRecipeReviewController(recipeReviewController);
 
