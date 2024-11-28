@@ -27,16 +27,34 @@ public class RecipeDetailDialog extends JDialog {
     private Recipes currentRecipe;
 
 
-    public RecipeDetailDialog(JFrame parent, Recipes recipe, AppBuilder appBuilder) {
+    public RecipeDetailDialog(JFrame parent, Recipes recipe, AppBuilder appBuilder, CommonUser currentUser) {
         super(parent, "Recipe Details", true);
         this.currentRecipe = recipe;
         this.appBuilder = (appBuilder != null) ? appBuilder : new AppBuilder();
+        this.currentUser = currentUser;
 
         if (currentRecipe == null) {
             JOptionPane.showMessageDialog(this, "Recipe not found.", "Error", JOptionPane.ERROR_MESSAGE);
             return;  // Exit if no recipe is available
         }
 
+        initUI();
+        loadRecipeDetails(recipe);
+
+        addReviewButton.addActionListener(e -> {
+            if (e.getSource().equals(addReviewButton)) {
+                openRecipeReviewDialog();
+            }
+        });
+
+    }
+
+    public RecipeDetailDialog(JFrame parent, Recipes recipe, AppBuilder appBuilder) {
+        this(parent, recipe, appBuilder, null);
+    }
+
+
+    private void initUI() {
         this.setLayout(new BorderLayout());
         this.setSize(600, 500);
 
@@ -57,15 +75,6 @@ public class RecipeDetailDialog extends JDialog {
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(addReviewButton);
         this.add(buttonPanel, BorderLayout.SOUTH);
-
-        loadRecipeDetails(recipe);
-
-        addReviewButton.addActionListener(e -> {
-            if (e.getSource().equals(addReviewButton)) {
-                openRecipeReviewDialog();
-            }
-        });
-
     }
 
     private void loadRecipeDetails(Recipes recipe) {
@@ -159,9 +168,10 @@ public class RecipeDetailDialog extends JDialog {
     }
 
     private void openRecipeReviewDialog() {
+        System.out.println("Opening Recipe Review Dialog");
 
         if (currentUser == null) {
-            JOptionPane.showMessageDialog(this, "User is not logged in.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "User is not logged in recipe details diaglog.", "Error", JOptionPane.ERROR_MESSAGE);
             return;  // Exit if no user is set
         }
 
@@ -169,6 +179,8 @@ public class RecipeDetailDialog extends JDialog {
             JOptionPane.showMessageDialog(this, "Recipe not found.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
+        System.out.println(currentRecipe.getName());
+        System.out.println(currentUser.getName());
 
         RecipeReviewView dialog = new RecipeReviewView(
                 appBuilder.getRecipeReviewViewModel(),
@@ -177,6 +189,7 @@ public class RecipeDetailDialog extends JDialog {
         );
         dialog.setRecipeReviewController(appBuilder.getRecipeReviewController());
         dialog.setCurrentUserAndRecipe(currentUser, currentRecipe);
+        System.out.println("Dialog is being set to visible.");
         dialog.setVisible(true);
     }
 

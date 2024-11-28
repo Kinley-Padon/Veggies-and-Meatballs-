@@ -10,8 +10,6 @@ import data_access.DBRecipeAddDataAccessObject;
 import data_access.DBRecipeDataAccessObject;
 import data_access.FileReviewDataAccessObject;
 import data_access.InMemoryUserDataAccessObject;
-import data_access.FavoriteRecipeDataAccessObject; // Import the interface
-import data_access.InMemoryFavoriteRecipeDataAccessObject; // Import the concrete implementation
 import entities.CommonUserFactory;
 import entities.UserFactory;
 import interface_adapter.ViewManagerModel;
@@ -23,9 +21,6 @@ import interface_adapter.login.LoginPresenter;
 import interface_adapter.login.LoginViewModel;
 import interface_adapter.logout.LogoutController;
 import interface_adapter.logout.LogoutPresenter;
-import interface_adapter.recipe_favorites.FavoriteRecipeController;
-import interface_adapter.recipe_favorites.FavoriteRecipePresenter;
-import interface_adapter.recipe_favorites.FavoriteRecipeViewModel;
 import interface_adapter.recipe_review.RecipeReviewController;
 import interface_adapter.recipe_review.RecipeReviewPresenter;
 import interface_adapter.recipe_review.RecipeReviewViewModel;
@@ -45,9 +40,6 @@ import use_case.login.LoginInteractor;
 import use_case.logout.LogoutInputBoundary;
 import use_case.logout.LogoutInteractor;
 import use_case.logout.LogoutOutputBoundary;
-import use_case.recipe_favorites.FavoriteRecipeInputBoundary;
-import use_case.recipe_favorites.FavoriteRecipeInteractor;
-import use_case.recipe_favorites.FavoriteRecipeOutputBoundary;
 import use_case.recipe_review.RecipeReviewDataAccessInterface;
 import use_case.recipe_review.RecipeReviewInputBoundary;
 import use_case.recipe_review.RecipeReviewInteractor;
@@ -77,14 +69,12 @@ public class AppBuilder {
     private final JPanel cardPanel = new JPanel();
     private final CardLayout cardLayout = new CardLayout();
 
-    private final FavoriteRecipeDataAccessObject favoriteRecipeDAO = new InMemoryFavoriteRecipeDataAccessObject(); // This is the concrete class
-
     private final UserFactory userFactory = new CommonUserFactory();
     private final ViewManagerModel viewManagerModel = new ViewManagerModel();
     private final ViewManager viewManager = new ViewManager(cardPanel, cardLayout, viewManagerModel);
 
 
-    private final InMemoryUserDataAccessObject userDataAccessObject = new InMemoryUserDataAccessObject();
+    private final InMemoryUserDataAccessObject userDataAccessObject = InMemoryUserDataAccessObject.getInstance();
     private final RecipeDataAccessInterface recipeDAO = new DBRecipeDataAccessObject();
     private final RecipeReviewDataAccessInterface reviewDAO = new FileReviewDataAccessObject("/Users/macbookair/Downloads/reviews.csv"); // Path to review CSV
 
@@ -138,19 +128,11 @@ public class AppBuilder {
      */
     public AppBuilder addLoggedInView() {
         loggedInViewModel = new LoggedInViewModel();
-
-        // Create the FavoriteRecipeController and inject it into the LoggedInView
-        FavoriteRecipeDataAccessObject favoriteRecipeDAO = new InMemoryFavoriteRecipeDataAccessObject(); // or your chosen DAO implementation
-        FavoriteRecipeController favoriteRecipeController = new FavoriteRecipeController(
-                new use_case.recipe_favorites.FavoriteRecipeInteractor(favoriteRecipeDAO, new FavoriteRecipePresenter())
-        );
-
-        // Pass both the LoggedInViewModel and FavoriteRecipeController to the constructor
-        loggedInView = new LoggedInView(loggedInViewModel, favoriteRecipeController);
-
+        loggedInView = new LoggedInView(loggedInViewModel);
         cardPanel.add(loggedInView, loggedInView.getViewName());
         return this;
     }
+
 
     private void ensureLoginInteractor() {
         if (loginInteractor == null) {
@@ -161,12 +143,6 @@ public class AppBuilder {
         }
     }
 
-//    public AppBuilder addLoggedInView() {
-//        loggedInViewModel = new LoggedInViewModel();
-//        loggedInView = new LoggedInView(loggedInViewModel);
-//        cardPanel.add(loggedInView, loggedInView.getViewName());
-//        return this;
-//    }
 
     /**
      * Adds the Recipe Review View to the application.
@@ -181,54 +157,16 @@ public class AppBuilder {
         return this;
     }
 
-//    /**
-//     * Adds the Recipe View to the application.
-//     * @return this builder.
-//     */
-//    public AppBuilder addRecipeView() {
-//        recipeViewModel = new RecipeViewModel();
-//        recipeView = new RecipeView(recipeViewModel);
-//        cardPanel.add(recipeView, "Gourmet Gateway");
-//        return this;
-//    }
-public AppBuilder addRecipeView() {
-    recipeViewModel = new RecipeViewModel();
-
-    // Create the concrete implementation of FavoriteRecipeDataAccessObject
-    FavoriteRecipeDataAccessObject favoriteRecipeDAO = new InMemoryFavoriteRecipeDataAccessObject(); // Use the concrete class
-
-    // Inject the FavoriteRecipeController into the RecipeView
-    FavoriteRecipeController favoriteRecipeController = new FavoriteRecipeController(
-            new use_case.recipe_favorites.FavoriteRecipeInteractor(favoriteRecipeDAO, new FavoriteRecipePresenter()) // Use the correct favoriteRecipeDAO instance
-    );
-
-    recipeView = new RecipeView(recipeViewModel, favoriteRecipeController);
-    cardPanel.add(recipeView, "Recipe View");
-
-    return this;
-}
-
-    public AppBuilder addFavoriteRecipeUseCase() {
-        // Create an output boundary and interactor for the Favorite Recipe use case
-        FavoriteRecipeOutputBoundary outputBoundary = new FavoriteRecipePresenter();
-        FavoriteRecipeInputBoundary interactor = new FavoriteRecipeInteractor(favoriteRecipeDAO, outputBoundary);
-
-        // Create the controller and link it with the interactor
-        FavoriteRecipeController controller = new FavoriteRecipeController(interactor);
+    /**
+     * Adds the Recipe View to the application.
+     * @return this builder.
+     */
+    public AppBuilder addRecipeView() {
+        recipeViewModel = new RecipeViewModel();
+        recipeView = new RecipeView(recipeViewModel, this);
+        cardPanel.add(recipeView, "Gourmet Gateway");
         return this;
     }
-
-    // Add the Favorite Recipe view (and any other methods as needed)
-    public AppBuilder addFavoriteRecipesView() {
-        // Assuming you have the FavoriteRecipesView and FavoriteRecipeViewModel
-        FavoriteRecipeViewModel favoriteRecipeViewModel = new FavoriteRecipeViewModel();
-        FavoriteRecipesView favoriteRecipesView = new FavoriteRecipesView(favoriteRecipeViewModel);
-
-        // Add the view to the card panel
-        cardPanel.add(favoriteRecipesView, "Favorite Recipes");
-        return this;
-    }
-
 
     /**
      * Adds the Signup Use Case to the application.
@@ -263,8 +201,7 @@ public AppBuilder addRecipeView() {
     public AppBuilder addRecipeReviewUseCase() {
         final RecipeReviewOutputBoundary recipeReviewOutputBoundary = new RecipeReviewPresenter(recipeReviewViewModel);
         final RecipeReviewInputBoundary recipeReviewInteractor = new RecipeReviewInteractor(reviewDAO, recipeReviewOutputBoundary);
-        System.out.println("UserDataAccessObject instance: " + userDataAccessObject);
-        // Create the RecipeReviewController and link it with the RecipeReviewView
+
         final RecipeReviewController recipeReviewController = new RecipeReviewController(recipeReviewInteractor);
         recipeReviewView.setRecipeReviewController(recipeReviewController);
 
