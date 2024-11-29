@@ -1,6 +1,7 @@
 package interface_adapter.recipe_add;
 
 import entities.Ingredient;
+import entities.Recipes;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -21,6 +21,15 @@ public class InMemoryUserDataAccessObject implements SignupUserDataAccessInterfa
     private final Map<String, User> users = new HashMap<>();
 
     private String currentUsername;
+    private static InMemoryUserDataAccessObject instance;
+
+    private InMemoryUserDataAccessObject() {}
+    public static InMemoryUserDataAccessObject getInstance() {
+        if (instance == null) {
+            instance = new InMemoryUserDataAccessObject();
+        }
+        return instance;
+    }
 
     @Override
     public boolean existsByName(String identifier) {
@@ -46,10 +55,12 @@ public class InMemoryUserDataAccessObject implements SignupUserDataAccessInterfa
     @Override
     public void setCurrentUsername(String name) {
         this.currentUsername = name;
+        System.out.println("Current username set to: " + currentUsername);
     }
 
     @Override
     public String getCurrentUsername() {
+        System.out.println("Current username retrieved: " + this.currentUsername);
         return this.currentUsername;
     }
 }

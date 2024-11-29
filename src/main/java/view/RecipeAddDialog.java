@@ -6,7 +6,7 @@ import interface_adapter.recipe_add.RecipeAddViewModel;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.List;  // Don't forget to import List class
 
 public class RecipeAddDialog extends JDialog {
     private final RecipeAddViewModel viewModel;
