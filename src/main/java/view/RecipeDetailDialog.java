@@ -2,13 +2,9 @@ package view;
 
 import app.AppBuilder;
 import data_access.DBRecipeDataAccessObject;
-import data_access.InMemoryUserDataAccessObject;
 import entities.CommonUser;
 import entities.Ingredient;
 import entities.Recipes;
-import interface_adapter.recipe_review.RecipeReviewController;
-import interface_adapter.recipe_review.RecipeReviewViewModel;
-import use_case.login.LoginInteractor;
 
 import javax.swing.*;
 import java.awt.*;

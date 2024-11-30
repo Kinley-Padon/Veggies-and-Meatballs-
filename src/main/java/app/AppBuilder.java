@@ -163,7 +163,7 @@ public class AppBuilder {
      */
     public AppBuilder addRecipeView() {
         recipeViewModel = new RecipeViewModel();
-        recipeView = new RecipeView(recipeViewModel, this);
+        recipeView = new RecipeView(recipeViewModel);
         cardPanel.add(recipeView, "Gourmet Gateway");
         return this;
     }
