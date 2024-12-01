@@ -2,13 +2,19 @@ package interface_adapter.recipe_review;
 
 import entities.CommonUser;
 import entities.Recipes;
+import entities.Review;
 import use_case.recipe_review.RecipeReviewInputBoundary;
+
+import java.util.List;
 
 public class RecipeReviewController {
     private final RecipeReviewInputBoundary recipeReviewInputBoundary;
+    private final RecipeReviewViewModel recipeReviewViewModel;
 
-    public RecipeReviewController(RecipeReviewInputBoundary recipeReviewInputBoundary) {
+    public RecipeReviewController(RecipeReviewInputBoundary recipeReviewInputBoundary,
+                                  RecipeReviewViewModel recipeReviewViewModel) {
         this.recipeReviewInputBoundary = recipeReviewInputBoundary;
+        this.recipeReviewViewModel = recipeReviewViewModel;
     }
 
     /**
@@ -23,6 +29,13 @@ public class RecipeReviewController {
             throw new IllegalArgumentException("Invalid input: User, recipe, and content must not be null or empty.");
         }
         recipeReviewInputBoundary.addReview(user, recipe, content);
+        loadReviewsForRecipe(recipe);
+    }
+
+    public void loadReviewsForRecipe(Recipes recipe) {
+        System.out.println("Controller: Loading reviews for recipe: " + recipe.getName());
+        List<Review> reviews = recipeReviewInputBoundary.getReviewsForRecipe(recipe);
+        recipeReviewViewModel.updateState(reviews);
     }
 
 }

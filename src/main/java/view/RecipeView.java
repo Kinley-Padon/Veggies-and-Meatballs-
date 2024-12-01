@@ -1,5 +1,7 @@
 package view;
 
+import app.AppBuilder;
+import entities.CommonUser;
 import entities.Recipes;
 import interface_adapter.recipe_add.RecipeAddController;
 import interface_adapter.recipe_add.RecipeAddViewModel;
@@ -25,6 +27,7 @@ public class RecipeView extends JPanel implements ActionListener, PropertyChange
     private final RecipeViewModel recipeViewModel;
     private RecipeAddController recipeAddController;
     private final RecipeAddViewModel recipeAddViewModel;
+    private final AppBuilder appBuilder;
 
     private final JLabel recipeNameLabel = new JLabel("Enter Recipe Name:");
     private final JTextArea recipeInputField = new JTextArea(1, 20); // Single-line input for recipe name
@@ -43,10 +46,10 @@ public class RecipeView extends JPanel implements ActionListener, PropertyChange
      *
      * @param recipeViewModel The RecipeViewModel to bind to the view.
      */
-    public RecipeView(RecipeViewModel recipeViewModel) {
+    public RecipeView(RecipeViewModel recipeViewModel, AppBuilder appBuilder) {
         this.recipeViewModel = recipeViewModel;
         this.recipeViewModel.addPropertyChangeListener(this);
-
+        this.appBuilder = appBuilder;
         this.recipeAddViewModel = new RecipeAddViewModel();
 
         recipeNameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -103,7 +106,9 @@ public class RecipeView extends JPanel implements ActionListener, PropertyChange
      */
     private void showRecipeDetails(Recipes recipe) {
         JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
-        RecipeDetailDialog detailDialog = new RecipeDetailDialog(parentFrame, recipe);
+        String Username = appBuilder.getLoginInteractor().getCurrentUsername();
+        CommonUser currentUser = (CommonUser) appBuilder.getUserDataAccessObject().get(Username);
+        RecipeDetailDialog detailDialog = new RecipeDetailDialog(parentFrame, recipe, appBuilder, currentUser);
         detailDialog.setLocationRelativeTo(this);
         detailDialog.setVisible(true);
     }
@@ -169,6 +174,3 @@ public class RecipeView extends JPanel implements ActionListener, PropertyChange
         this.recipeController = recipeController;
     }
 }
-
-
-
