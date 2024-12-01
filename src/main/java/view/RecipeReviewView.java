@@ -68,10 +68,11 @@ public class RecipeReviewView extends JPanel implements ActionListener, Property
 
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         this.add(recipeName);
-
+      
         reviewsDisplayArea.setEditable(false);
         reviewsDisplayArea.setLineWrap(true);
         reviewsDisplayArea.setWrapStyleWord(true);
+
         JScrollPane reviewsScrollPane = new JScrollPane(reviewsDisplayArea);
         reviewsScrollPane.setBorder(BorderFactory.createTitledBorder("Reviews"));
         this.add(reviewsScrollPane);
@@ -143,6 +144,7 @@ public class RecipeReviewView extends JPanel implements ActionListener, Property
             System.out.println("Reviews loaded: " + reviewsText.toString());
 
             SwingUtilities.invokeLater(() -> reviewsDisplayArea.setText(reviewsText.toString()));
+          
         } else {
             System.out.println("No reviews available for display."); // Debug
             SwingUtilities.invokeLater(() -> reviewsDisplayArea.setText("No reviews available for this recipe."));
