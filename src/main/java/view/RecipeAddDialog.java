@@ -11,7 +11,6 @@ import java.util.List;
 
 public class RecipeAddDialog extends JDialog {
     private final RecipeAddController recipeAddController;
-    private final RecipeAddViewModel viewModel;
 
     private JTextField recipeNameField;
     private JTextArea stepsArea;
@@ -21,7 +20,6 @@ public class RecipeAddDialog extends JDialog {
 
     public RecipeAddDialog(RecipeAddController recipeAddController, RecipeAddViewModel viewModel) {
         this.recipeAddController = recipeAddController;
-        this.viewModel = viewModel;
 
         setTitle("Add New Recipe");
         setSize(500, 400);
@@ -33,6 +31,7 @@ public class RecipeAddDialog extends JDialog {
 
     private void initUI() {
         setLayout(new BorderLayout(10, 10));
+
         JPanel topPanel = new JPanel();
         topPanel.setLayout(new GridLayout(2, 2, 10, 10));
         add(topPanel, BorderLayout.NORTH);
@@ -66,9 +65,16 @@ public class RecipeAddDialog extends JDialog {
         JScrollPane ingredientsScrollPane = new JScrollPane(ingredientsList);
         ingredientsPanel.add(ingredientsScrollPane, BorderLayout.CENTER);
 
+        JPanel ingredientButtonsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        ingredientsPanel.add(ingredientButtonsPanel, BorderLayout.SOUTH);
+
         JButton addIngredientButton = new JButton("Add Ingredient");
         addIngredientButton.addActionListener(e -> addIngredient());
-        ingredientsPanel.add(addIngredientButton, BorderLayout.SOUTH);
+        ingredientButtonsPanel.add(addIngredientButton);
+
+        JButton removeIngredientButton = new JButton("Remove Selected Ingredient");
+        removeIngredientButton.addActionListener(e -> removeSelectedIngredient());
+        ingredientButtonsPanel.add(removeIngredientButton);
 
         JPanel stepsPanel = new JPanel();
         stepsPanel.setLayout(new BorderLayout(5, 5));
@@ -104,6 +110,16 @@ public class RecipeAddDialog extends JDialog {
                 JOptionPane.showMessageDialog(this, "Invalid quantity. Please enter a valid number.",
                         "Error", JOptionPane.ERROR_MESSAGE);
             }
+        }
+    }
+
+    private void removeSelectedIngredient() {
+        int selectedIndex = ingredientsList.getSelectedIndex();
+        if (selectedIndex != -1) {
+            ingredientsListModel.remove(selectedIndex);
+        } else {
+            JOptionPane.showMessageDialog(this, "No ingredient selected to remove.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
