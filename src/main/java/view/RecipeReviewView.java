@@ -27,7 +27,8 @@ public class RecipeReviewView extends JPanel implements ActionListener, Property
 
     private final RecipeReviewViewModel recipeReviewViewModel;
 
-    private final JLabel recipeName = new JLabel("Recipe Review for: [Recipe Name]");
+    private final JLabel recipeName = new JLabel("Reviews for [Recipe Name]");
+    private final JLabel addReviewLabel = new JLabel("Add your review:");
     private final JTextArea reviewInputField = new JTextArea();
 
     private final JButton saveButton = new JButton("Save Review");
@@ -46,13 +47,12 @@ public class RecipeReviewView extends JPanel implements ActionListener, Property
 
         this.recipeReviewViewModel = recipeReviewViewModel;
         this.recipeReviewViewModel.addPropertyChangeListener(this);
-
+        System.out.println("View: PropertyChangeListener added to ViewModel"); // Debug
 
         String currentUsername = loginInteractor.getCurrentUsername();
         if (currentUsername != null) {
             this.currentUser = (CommonUser) userDataAccessObject.get(currentUsername);
         }
-
 
         saveButton.addActionListener(evt -> {
             if (evt.getSource().equals(saveButton)) {
@@ -68,8 +68,21 @@ public class RecipeReviewView extends JPanel implements ActionListener, Property
 
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         this.add(recipeName);
-        this.add(new JScrollPane(reviewInputField));
-        this.add(new JScrollPane(reviewsDisplayArea));
+
+        reviewsDisplayArea.setEditable(false); // Make reviews read-only
+        JScrollPane reviewsScrollPane = new JScrollPane(reviewsDisplayArea);
+        reviewsScrollPane.setBorder(BorderFactory.createTitledBorder("Reviews"));
+        this.add(reviewsScrollPane);
+
+
+        reviewInputField.setLineWrap(true); // Enable line wrapping
+        reviewInputField.setWrapStyleWord(true);
+        JScrollPane reviewInputScrollPane = new JScrollPane(reviewInputField);
+        reviewInputScrollPane.setPreferredSize(new Dimension(300, 100));
+
+        this.add(addReviewLabel);
+        this.add(reviewInputScrollPane);
+
         JPanel buttonsPanel = new JPanel();
         buttonsPanel.add(saveButton);
         this.add(buttonsPanel);
@@ -89,7 +102,9 @@ public class RecipeReviewView extends JPanel implements ActionListener, Property
         this.currentUser = user;
         this.currentRecipe = recipe;
         if (user != null && recipe != null) {
-            recipeName.setText("Recipe Review for: " + recipe.getName());
+            recipeName.setText("Review for " + recipe.getName());
+            recipeReviewController.loadReviewsForRecipe(recipe);
+
         } else {
             JOptionPane.showMessageDialog(this, "Error: User or Recipe is null.", "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -115,17 +130,34 @@ public class RecipeReviewView extends JPanel implements ActionListener, Property
 
 
     private void setFields(RecipeReviewState state) {
+
+        System.out.println("Fetched reviews: " + state.getReviews()); // DEBUGGER
+
         if (state.getReviews() != null && !state.getReviews().isEmpty()) {
             StringBuilder reviewsText = new StringBuilder("Reviews:\n");
             for (Review review : state.getReviews()) {
                 reviewsText.append(review.getContent()).append("\n");
             }
-            reviewsDisplayArea.setText(reviewsText.toString());
+            System.out.println("Reviews loaded: " + reviewsText.toString());
+            // reviewsDisplayArea.setText(reviewsText.toString());
+            SwingUtilities.invokeLater(() -> reviewsDisplayArea.setText(reviewsText.toString()));
+        } else {
+            System.out.println("No reviews available for display."); // Debug
+            // reviewsDisplayArea.setText("No reviews available for this recipe.");
+            SwingUtilities.invokeLater(() -> reviewsDisplayArea.setText("No reviews available for this recipe."));
         }
     }
 
-
     public void setRecipeReviewController(RecipeReviewController controller) {
+        if (controller == null) {
+            System.out.println("Error: Attempting to set a null controller.");
+        } else {
+            System.out.println("Controller is being set successfully: " + controller);
+        }
         this.recipeReviewController = controller;
+        if (currentRecipe != null) {
+            System.out.println("Controller set; loading reviews for recipe: " + currentRecipe.getName());
+            recipeReviewController.loadReviewsForRecipe(currentRecipe);
+        }
     }
 }

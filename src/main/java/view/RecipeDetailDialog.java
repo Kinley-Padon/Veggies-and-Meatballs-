@@ -2,9 +2,13 @@ package view;
 
 import app.AppBuilder;
 import data_access.DBRecipeDataAccessObject;
+import data_access.InMemoryUserDataAccessObject;
 import entities.CommonUser;
 import entities.Ingredient;
 import entities.Recipes;
+import interface_adapter.recipe_review.RecipeReviewController;
+import interface_adapter.recipe_review.RecipeReviewViewModel;
+import use_case.login.LoginInteractor;
 
 import javax.swing.*;
 import java.awt.*;
@@ -178,15 +182,20 @@ public class RecipeDetailDialog extends JDialog {
         System.out.println(currentRecipe.getName());
         System.out.println(currentUser.getName());
 
-        RecipeReviewView dialog = new RecipeReviewView(
-                appBuilder.getRecipeReviewViewModel(),
-                appBuilder.getLoginInteractor(),
-                appBuilder.getUserDataAccessObject()
-        );
-        dialog.setRecipeReviewController(appBuilder.getRecipeReviewController());
-        dialog.setCurrentUserAndRecipe(currentUser, currentRecipe);
-        System.out.println("Dialog is being set to visible.");
-        dialog.setVisible(true);
-    }
+        SwingUtilities.invokeLater(() -> {
+            JDialog reviewDialog = new JDialog((JFrame) SwingUtilities.getWindowAncestor(this), "Reviews", true);
+            RecipeReviewView reviewView = new RecipeReviewView(
+                    appBuilder.getRecipeReviewViewModel(),
+                    appBuilder.getLoginInteractor(),
+                    appBuilder.getUserDataAccessObject()
+            );
 
+            reviewView.setRecipeReviewController(appBuilder.getRecipeReviewController());
+            reviewView.setCurrentUserAndRecipe(currentUser, currentRecipe);
+            reviewDialog.add(reviewView);
+            reviewDialog.setSize(600, 400);
+            reviewDialog.setLocationRelativeTo(this);
+            reviewDialog.setVisible(true);
+        });
+    }
 }

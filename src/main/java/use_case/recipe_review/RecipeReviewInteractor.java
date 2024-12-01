@@ -55,7 +55,7 @@ public class RecipeReviewInteractor implements RecipeReviewInputBoundary {
      * @param recipe The recipe for which reviews are to be fetched.
      */
     @Override
-    public void getReviewsForRecipe(Recipes recipe) {
+    public List<Review> getReviewsForRecipe(Recipes recipe) {
         try {
             if (recipe == null) {
                 throw new IllegalArgumentException("Recipe cannot be null.");
@@ -68,9 +68,13 @@ public class RecipeReviewInteractor implements RecipeReviewInputBoundary {
             } else {
                 outputBoundary.prepareSuccessView(reviews);
             }
+
+            return reviews;
+
         } catch (Exception e) {
             outputBoundary.prepareFailureView(e.getMessage());
         }
+        return List.of();
     }
 
 }
