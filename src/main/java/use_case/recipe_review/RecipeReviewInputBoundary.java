@@ -2,6 +2,9 @@ package use_case.recipe_review;
 
 import entities.Recipes;
 import entities.CommonUser;
+import entities.Review;
+
+import java.util.List;
 
 /**
  * The Input Boundary for recipe review use cases.
@@ -22,6 +25,6 @@ public interface RecipeReviewInputBoundary {
      *
      * @param recipe The recipe for which reviews are to be fetched.
      */
-    void getReviewsForRecipe(Recipes recipe);
+    List<Review> getReviewsForRecipe(Recipes recipe);
 
 }

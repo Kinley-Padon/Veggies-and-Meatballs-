@@ -107,7 +107,11 @@ public class FileReviewDataAccessObject implements RecipeReviewDataAccessInterfa
 
     @Override
     public List<Review> getReviewsByRecipe(Recipes recipe) {
-        return new ArrayList<>(recipeReviews.getOrDefault(recipe.getName(), Collections.emptyList()));
+        List<Review> reviews = recipeReviews.getOrDefault(recipe.getName(), Collections.emptyList());
+        System.out.println("Fetching reviews for recipe: " + recipe.getName());
+        System.out.println("Reviews fetched: " + reviews);
+        return new ArrayList<>(reviews);
+        // return new ArrayList<>(recipeReviews.getOrDefault(recipe.getName(), Collections.emptyList()));
     }
 
     private String escapeCsv(String value) {

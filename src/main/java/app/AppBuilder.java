@@ -93,6 +93,7 @@ public class AppBuilder {
     private RecipeAddViewModel recipeAddViewModel;
     private RecipeAddDataAccessInterface recipeAddDAO = new DBRecipeAddDataAccessObject();
     private RecipeReviewView recipeReviewView;
+    private RecipeReviewController recipeReviewController;
 
     public AppBuilder() {
         cardPanel.setLayout(cardLayout);
@@ -152,7 +153,7 @@ public class AppBuilder {
         ensureLoginInteractor();
         recipeReviewViewModel = new RecipeReviewViewModel();
         recipeReviewView = new RecipeReviewView(recipeReviewViewModel, getLoginInteractor(), getUserDataAccessObject());
-
+        recipeReviewView.setRecipeReviewController(getRecipeReviewController());
         cardPanel.add(recipeReviewView, "Recipe Review");
         return this;
     }
@@ -163,7 +164,7 @@ public class AppBuilder {
      */
     public AppBuilder addRecipeView() {
         recipeViewModel = new RecipeViewModel();
-        recipeView = new RecipeView(recipeViewModel);
+        recipeView = new RecipeView(recipeViewModel, this);
         cardPanel.add(recipeView, "Gourmet Gateway");
         return this;
     }
@@ -199,10 +200,10 @@ public class AppBuilder {
     }
 
     public AppBuilder addRecipeReviewUseCase() {
-        final RecipeReviewOutputBoundary recipeReviewOutputBoundary = new RecipeReviewPresenter(recipeReviewViewModel);
-        final RecipeReviewInputBoundary recipeReviewInteractor = new RecipeReviewInteractor(reviewDAO, recipeReviewOutputBoundary);
+        // final RecipeReviewOutputBoundary recipeReviewOutputBoundary = new RecipeReviewPresenter(recipeReviewViewModel);
+        // final RecipeReviewInputBoundary recipeReviewInteractor = new RecipeReviewInteractor(reviewDAO, recipeReviewOutputBoundary);
 
-        final RecipeReviewController recipeReviewController = new RecipeReviewController(recipeReviewInteractor);
+        // final RecipeReviewController recipeReviewController = new RecipeReviewController(recipeReviewInteractor);
         recipeReviewView.setRecipeReviewController(recipeReviewController);
 
         return this;
@@ -284,9 +285,9 @@ public class AppBuilder {
     }
 
     /**
-    * Adds the Add Recipe Use Case to the application.
-    * @return this builder
-    */
+     * Adds the Add Recipe Use Case to the application.
+     * @return this builder
+     */
     public AppBuilder addRecipeAddUseCase() {
         final RecipeAddOutputBoundary recipeOutputBoundary = new RecipeAddPresenter(viewManagerModel, recipeAddViewModel);
 
@@ -312,9 +313,12 @@ public class AppBuilder {
     }
 
     public RecipeReviewController getRecipeReviewController() {
-        RecipeReviewPresenter recipeReviewPresenter = new RecipeReviewPresenter(recipeReviewViewModel);
-        RecipeReviewInteractor recipeReviewInteractor = new RecipeReviewInteractor(reviewDAO, recipeReviewPresenter);
-        return new RecipeReviewController(recipeReviewInteractor);
+        if (recipeReviewController == null) {
+            RecipeReviewPresenter recipeReviewPresenter = new RecipeReviewPresenter(getRecipeReviewViewModel());
+            RecipeReviewInteractor recipeReviewInteractor = new RecipeReviewInteractor(reviewDAO, recipeReviewPresenter);
+            recipeReviewController = new RecipeReviewController(recipeReviewInteractor, getRecipeReviewViewModel());
+        }
+        return recipeReviewController;
     }
 
 }

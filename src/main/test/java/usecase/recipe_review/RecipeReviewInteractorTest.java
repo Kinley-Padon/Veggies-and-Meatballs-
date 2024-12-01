@@ -1,4 +1,4 @@
-package java.usecase;
+package java.usecase.recipe_review;
 
 import entities.CommonUser;
 import entities.Recipes;
