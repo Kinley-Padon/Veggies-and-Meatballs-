@@ -24,10 +24,18 @@ public class RecipeReviewViewModel extends ViewModel<RecipeReviewState> {
      * @param reviews The list of reviews to update the state with.
      */
     public void updateState(List<Review> reviews) {
-        RecipeReviewState state = getState();
-        state.setReviews(reviews);
+
+        RecipeReviewState oldState = getState();
+        RecipeReviewState newState = new RecipeReviewState();
+        newState.setReviews(reviews);
+
         System.out.println("ViewModel: Updating state with reviews: " + reviews); // Debug
-        setState(state);
+
+        // Update the internal state
+        setState(newState);
+
+        // Fire property change
+        firePropertyChanged("recipeReviewState"); // Notify listeners
     }
 
 }
