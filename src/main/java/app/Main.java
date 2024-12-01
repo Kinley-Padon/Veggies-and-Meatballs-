@@ -25,8 +25,6 @@ public class Main {
                                             .addRecipeReviewUseCase()
                                             .addRecipeSearchUseCase()
                                             .addRecipeAddUseCase()
-                                            .addFavoriteRecipeUseCase()
-                                            .addFavoriteRecipesView()
                                             .build();
 
         application.pack();
