@@ -1,5 +1,8 @@
 package entities;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +28,9 @@ public class Recipes{
         this.reviews = new ArrayList<>();
     }
 
-    public Recipes(int id, String name, List<Ingredient> ingredients, String description) {
+    @JsonCreator
+    public Recipes(@JsonProperty("id") int id, @JsonProperty("name") String name, @JsonProperty("ingredients") List<Ingredient> ingredients,
+                   @JsonProperty("description") String description) {
         this.id = id;
         this.name = name;
         this.ingredients = ingredients;

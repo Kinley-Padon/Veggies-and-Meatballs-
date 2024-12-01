@@ -1,6 +1,9 @@
 package entities;
 
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Ingredient {
     private final String name;
     private double quantity;
@@ -10,6 +13,12 @@ public class Ingredient {
         this.name = name;
         this.quantity = quantity;
         this.unit = unit;
+    }
+
+    @JsonCreator
+    public Ingredient(@JsonProperty("name") String name, @JsonProperty("quantity") double quantity) {
+        this.name = name;
+        this.quantity = quantity;
     }
 
     public String getName() {

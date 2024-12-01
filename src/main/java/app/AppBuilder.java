@@ -76,7 +76,7 @@ public class AppBuilder {
 
     private final InMemoryUserDataAccessObject userDataAccessObject = InMemoryUserDataAccessObject.getInstance();
     private final RecipeDataAccessInterface recipeDAO = new DBRecipeDataAccessObject();
-    private final RecipeReviewDataAccessInterface reviewDAO = new FileReviewDataAccessObject("/Users/macbookair/Downloads/reviews.csv"); // Path to review CSV
+    private final RecipeReviewDataAccessInterface reviewDAO = new FileReviewDataAccessObject("/Users/macbook/Desktop/Intellij/padon.csv"); // Path to review CSV
 
     private LoginPresenter loginPresenter;
     private LoginInteractor loginInteractor;
@@ -289,17 +289,17 @@ public class AppBuilder {
      * @return this builder
      */
     public AppBuilder addRecipeAddUseCase() {
-        final RecipeAddOutputBoundary recipeOutputBoundary = new RecipeAddPresenter(viewManagerModel, recipeAddViewModel);
+        recipeAddViewModel = new RecipeAddViewModel();
+        final RecipeAddOutputBoundary recipeOutputBoundary = new RecipeAddPresenter(recipeAddViewModel);
 
-        final RecipeAddInputBoundary recipeInteractor = new RecipeAddInteractor(recipeOutputBoundary, recipeAddDAO);
+        final RecipeAddInteractor recipeAddInteractor = new RecipeAddInteractor(recipeOutputBoundary, recipeAddDAO, recipeAddViewModel);
 
-        final RecipeAddController recipeAddController = new RecipeAddController(recipeInteractor);
+        final RecipeAddController recipeAddController = new RecipeAddController(recipeAddInteractor, recipeAddInteractor);
 
         if (recipeView == null) {
-            throw new RuntimeException("addRecipeView must be called before addRecipeUseCase");
+            throw new RuntimeException("addRecipeView must be called before addRecipeAddUseCase");
         }
         recipeView.setRecipeAddController(recipeAddController);
-
         return this;
     }
 

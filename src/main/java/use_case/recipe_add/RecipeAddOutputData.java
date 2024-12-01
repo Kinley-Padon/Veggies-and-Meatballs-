@@ -7,21 +7,19 @@ import java.util.List;
  * This class represents the data returned after successfully adding a recipe.
  */
 public class RecipeAddOutputData {
+    private final int id;
 
     private final String recipeName;
     private final String description;
     private final List<Ingredient> ingredients;
-    private final String imageUrl;
 
-    // Constructor
-    public RecipeAddOutputData(String recipeName, String description, List<Ingredient> ingredients, String imageUrl) {
+    public RecipeAddOutputData(int recipeID, String recipeName, List<Ingredient> ingredients, String description) {
         this.recipeName = recipeName;
         this.description = description;
         this.ingredients = ingredients;
-        this.imageUrl = imageUrl;
+        this.id = recipeID;
     }
 
-    // Getters
     public String getRecipeName() {
         return recipeName;
     }
@@ -34,7 +32,7 @@ public class RecipeAddOutputData {
         return ingredients;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public int getId() {
+        return id;
     }
 }
