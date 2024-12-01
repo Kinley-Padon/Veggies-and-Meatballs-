@@ -30,7 +30,7 @@ public class Review {
 
     @Override
     public String toString() {
-        return recipeName + "\n" + user.getName() + ": " + content;
+        return user.getName() + ": " + content;
     }
 
 }
