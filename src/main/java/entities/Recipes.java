@@ -1,25 +1,75 @@
 package entities;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import java.util.List;
+
 /**
  * Represents a recipe with its ID, name and image.
  */
 
 public class Recipes{
 
-    private int ID;
-    private String Name;
+    private final int id;
+    private final String name;
+    private String description;
+    private List<Ingredient> ingredients;
+    private String image;
+    private List<Review> reviews;
 
-    public Recipes(int ID, String Name){
-        this.ID = ID;
-        this.Name = Name;
+    public Recipes(int ID, String Name, String image){
+        this.id = ID;
+        this.name = Name;
+        this.image = image;
+        this.reviews = new ArrayList<>();
+    }
+
+    public Recipes(int id, String name, List<Ingredient> ingredients, String description) {
+        this.id = id;
+        this.name = name;
+        this.ingredients = ingredients;
+        this.description = description;
     }
 
     public String getName(){
-        return Name;
+        return name;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public int getID(){
-        return ID;
+        return id;
     }
 
+    @Override
+    public String toString() {
+        return String.format("<%s>", name);
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public List<Ingredient> getIngredients() {
+        return ingredients;
+    }
+
+    public void setIngredients(List<Ingredient> ingredients) {
+        this.ingredients = ingredients;
+    }
+
+    public List<Review> getReviews() {
+        return reviews;
+    }
 }

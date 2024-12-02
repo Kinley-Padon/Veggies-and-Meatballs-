@@ -1,24 +1,41 @@
 package interface_adapter;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 
-import interface_adapter.note.RecipeState;
+public class ViewModel<T> {
 
-public class ViewModel {
-    private RecipeState state;
+    private final String viewName;
 
-    public ViewModel() {
-        this.state = new RecipeState();
+    private final PropertyChangeSupport support = new PropertyChangeSupport(this);
+
+    private T state;
+
+    public ViewModel(String viewName) {
+        this.viewName = viewName;
     }
 
-    public RecipeState getState() {
-        return state;
+    public String getViewName() {
+        return this.viewName;
     }
 
-    public void updateRecipeDetails(String details) {
-        state.setRecipeDetails(details);
+    public T getState() {
+        return this.state;
     }
 
-    public void updateError(String error) {
-        state.setErrorMessage(error);
+    public void setState(T state) {
+        this.state = state;
+    }
+    public void firePropertyChanged() {
+        this.support.firePropertyChange("state", null, this.state);
+    }
+    public void firePropertyChanged(String propertyName) {
+        this.support.firePropertyChange(propertyName, null, this.state);
+    }
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        this.support.addPropertyChangeListener(listener);
     }
 }
+
+
+
