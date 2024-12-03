@@ -25,7 +25,6 @@ Anyone interested in sharing their own recipes with a wider audience.
 
 [Contribution by others](#contribution-by-others)
 
-[License](#license)
 
 ## Authors and Contributors 
 
