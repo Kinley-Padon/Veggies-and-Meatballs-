@@ -158,13 +158,10 @@ public class RecipeView extends JPanel implements ActionListener, PropertyChange
     }
 
     private void openAddRecipeDialog() {
-        RecipeAddDialog dialog = new RecipeAddDialog(recipeAddViewModel);
+        RecipeAddDialog dialog = new RecipeAddDialog(recipeAddController, recipeAddViewModel);
         dialog.setVisible(true);
     }
 
-    public String getViewName() {
-        return "Recipe View";
-    }
 
     public void setRecipeAddController(RecipeAddController controller) {
         this.recipeAddController = controller;

@@ -6,6 +6,5 @@ import java.util.Set;
 
 public interface RecipeAddDataAccessInterface {
     void saveRecipe(Recipes recipe) throws RecipeAddDataAccessException;
-    Set<Integer> fetchExistingRecipeIds() throws RecipeAddDataAccessException;
 }
 

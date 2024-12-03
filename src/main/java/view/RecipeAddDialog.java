@@ -1,99 +1,172 @@
 package view;
 
 import entities.Ingredient;
+import interface_adapter.recipe_add.RecipeAddController;
 import interface_adapter.recipe_add.RecipeAddViewModel;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.List;  // Don't forget to import List class
+import java.util.List;
 
 public class RecipeAddDialog extends JDialog {
-    private final RecipeAddViewModel viewModel;
-    private JTextField ingredientsField;
+    private final RecipeAddController recipeAddController;
+
     private JTextField recipeNameField;
     private JTextArea stepsArea;
-    private JButton submitButton;
-    private JLabel recipeIdLabel;
-    private JLabel recipeNameLabel;
+    private DefaultListModel<String> ingredientsListModel;
+    private JList<String> ingredientsList;
+    private JLabel recipeIDLabel;
 
-    public RecipeAddDialog(RecipeAddViewModel viewModel) {
-        this.viewModel = viewModel;
+    public RecipeAddDialog(RecipeAddController recipeAddController, RecipeAddViewModel viewModel) {
+        this.recipeAddController = recipeAddController;
+
         setTitle("Add New Recipe");
-        setSize(400, 300);
-        setLocationRelativeTo(null);  // Center the dialog
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);  // Close the dialog when the user presses the close button
+        setSize(500, 400);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         initUI();
     }
 
     private void initUI() {
-        setLayout(new GridLayout(5, 2, 10, 10));
+        setLayout(new BorderLayout(10, 10));
 
-        // Recipe ID and Name
-        recipeIdLabel = new JLabel("Recipe ID: " + viewModel.getState().getRecipeID());
-        add(recipeIdLabel);
-        add(new JLabel());
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new GridLayout(2, 2, 10, 10));
+        add(topPanel, BorderLayout.NORTH);
 
-        recipeNameLabel = new JLabel("Recipe Name");
-        recipeNameField = new JTextField(10);// Empty label
-        add(recipeNameLabel);
-        add(recipeNameField); // Empty label
+        JButton generateIDButton = new JButton("Generate Recipe ID");
+        generateIDButton.addActionListener(e -> generateRecipeID());
+        topPanel.add(generateIDButton);
 
-        // Recipe Ingredients
+        recipeIDLabel = new JLabel("Generated ID will be displayed here");
+        topPanel.add(recipeIDLabel);
+
+        JLabel recipeNameLabel = new JLabel("Recipe Name:");
+        topPanel.add(recipeNameLabel);
+
+        recipeNameField = new JTextField(20);
+        topPanel.add(recipeNameField);
+
+        JPanel centerPanel = new JPanel();
+        centerPanel.setLayout(new BorderLayout(10, 10));
+        add(centerPanel, BorderLayout.CENTER);
+
+        JPanel ingredientsPanel = new JPanel();
+        ingredientsPanel.setLayout(new BorderLayout(5, 5));
+        centerPanel.add(ingredientsPanel, BorderLayout.NORTH);
+
         JLabel ingredientsLabel = new JLabel("Ingredients:");
-        ingredientsField = new JTextField(1000);
-        add(ingredientsLabel);
-        add(ingredientsField);
+        ingredientsPanel.add(ingredientsLabel, BorderLayout.NORTH);
 
-        // Recipe Steps
+        ingredientsListModel = new DefaultListModel<>();
+        ingredientsList = new JList<>(ingredientsListModel);
+        JScrollPane ingredientsScrollPane = new JScrollPane(ingredientsList);
+        ingredientsPanel.add(ingredientsScrollPane, BorderLayout.CENTER);
+
+        JPanel ingredientButtonsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        ingredientsPanel.add(ingredientButtonsPanel, BorderLayout.SOUTH);
+
+        JButton addIngredientButton = new JButton("Add Ingredient");
+        addIngredientButton.addActionListener(e -> addIngredient());
+        ingredientButtonsPanel.add(addIngredientButton);
+
+        JButton removeIngredientButton = new JButton("Remove Selected Ingredient");
+        removeIngredientButton.addActionListener(e -> removeSelectedIngredient());
+        ingredientButtonsPanel.add(removeIngredientButton);
+
+        JPanel stepsPanel = new JPanel();
+        stepsPanel.setLayout(new BorderLayout(5, 5));
+        centerPanel.add(stepsPanel, BorderLayout.CENTER);
+
         JLabel stepsLabel = new JLabel("Steps:");
-        stepsArea = new JTextArea(4, 20);
-        JScrollPane stepsScrollPane = new JScrollPane(stepsArea);
-        add(stepsLabel);
-        add(stepsScrollPane);
+        stepsPanel.add(stepsLabel, BorderLayout.NORTH);
 
-        // Submit Button
-        submitButton = new JButton("Submit");
+        stepsArea = new JTextArea(5, 30);
+        JScrollPane stepsScrollPane = new JScrollPane(stepsArea);
+        stepsPanel.add(stepsScrollPane, BorderLayout.CENTER);
+
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+        add(bottomPanel, BorderLayout.SOUTH);
+
+        JButton submitButton = new JButton("Submit");
         submitButton.addActionListener(e -> submitRecipe());
-        add(new JLabel());  // Empty cell
-        add(submitButton);
+        bottomPanel.add(submitButton);
+    }
+
+    private void addIngredient() {
+        String ingredientName = JOptionPane.showInputDialog(this, "Enter ingredient name:");
+        String ingredientQuantity = JOptionPane.showInputDialog(this, "Enter ingredient quantity:");
+        String ingredientUnit = JOptionPane.showInputDialog(this, "Enter ingredient unit:");
+
+        if (ingredientName != null && ingredientQuantity != null && ingredientUnit != null) {
+            try {
+                double quantity = Double.parseDouble(ingredientQuantity);
+                String ingredientDetails = ingredientName + " | " + quantity + " | " + ingredientUnit;
+                ingredientsListModel.addElement(ingredientDetails);
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Invalid quantity. Please enter a valid number.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private void removeSelectedIngredient() {
+        int selectedIndex = ingredientsList.getSelectedIndex();
+        if (selectedIndex != -1) {
+            ingredientsListModel.remove(selectedIndex);
+        } else {
+            JOptionPane.showMessageDialog(this, "No ingredient selected to remove.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void generateRecipeID() {
+        try {
+            int generatedId = recipeAddController.generateRecipeId();
+            recipeIDLabel.setText("Recipe ID: " + generatedId);
+        } catch (Exception e) {
+            recipeIDLabel.setText("Error generating ID: " + e.getMessage());
+        }
     }
 
     private void submitRecipe() {
-        String ingredientsText = ingredientsField.getText(); // Get the ingredients text
-        String[] ingredientsArray = ingredientsText.split(","); // Split by comma or another separator
+        String recipeName = recipeNameField.getText();
+        String description = stepsArea.getText();
+        List<String> ingredients = new ArrayList<>();
 
-        List<Ingredient> ingredients = new ArrayList<>();
-
-        for (String ingredientText : ingredientsArray) {
-            // Assuming each ingredient is entered as "name | quantity | unit"
-            String[] ingredientDetails = ingredientText.split("\\|"); // Assuming "|" separates name, quantity, and unit
-
-            if (ingredientDetails.length == 3) {
-                String name = ingredientDetails[0].trim();  // Ingredient name
-                double quantity = Double.parseDouble(ingredientDetails[1].trim());  // Ingredient quantity
-                String unit = ingredientDetails[2].trim();  // Ingredient unit
-
-                // Create Ingredient objects with name, quantity, and unit
-                ingredients.add(new Ingredient(name, quantity, unit));
-            } else {
-                JOptionPane.showMessageDialog(this, "Invalid ingredient format. Use: name | quantity | unit", "Input Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
+        for (int i = 0; i < ingredientsListModel.size(); i++) {
+            ingredients.add(ingredientsListModel.getElementAt(i));
         }
 
-        String steps = stepsArea.getText(); // Get the recipe steps as text
+        if (recipeName.isEmpty() || ingredients.isEmpty() || description.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "All fields are required.", "Validation Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-        // Call the viewModel to trigger the Add Recipe use case
-        viewModel.submitRecipe(ingredients, steps);
-
-        // Close the dialog after submission
-        dispose();
+        try {
+            recipeAddController.addRecipe(recipeName, parseIngredients(ingredients), description);
+            JOptionPane.showMessageDialog(this, "Recipe added successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+            dispose();
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "An error occurred: " + ex.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
-    private void openAddRecipeDialog() {
-        RecipeAddDialog dialog = new RecipeAddDialog(viewModel); // Pass the viewModel here
-        dialog.setVisible(true);
+    private List<Ingredient> parseIngredients(List<String> ingredientDetails) {
+        List<Ingredient> ingredients = new ArrayList<>();
+        for (String detail : ingredientDetails) {
+            String[] parts = detail.split("\\|");
+            if (parts.length == 3) {
+                String name = parts[0].trim();
+                double quantity = Double.parseDouble(parts[1].trim());
+                String unit = parts[2].trim();
+                ingredients.add(new Ingredient(name, quantity, unit));
+            }
+        }
+        return ingredients;
     }
 }

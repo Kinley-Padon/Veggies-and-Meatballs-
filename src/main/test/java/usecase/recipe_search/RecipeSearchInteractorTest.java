@@ -1,138 +1,79 @@
-import entities.Ingredient;
+package use_case.recipe_search;
+
 import entities.Recipes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import use_case.recipe_search.RecipeDataAccessException;
-import use_case.recipe_search.RecipeDataAccessInterface;
-import use_case.recipe_search.RecipeInteractor;
-import use_case.recipe_search.RecipeOutputBoundary;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.ArrayList;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
-public class RecipeSearchInteractorTest {
+class RecipeSearchInteractorTest {
 
-    private RecipeDataAccessInterface recipeDataAccessInterface;
-    private RecipeOutputBoundary recipeOutputBoundary;
+    private RecipeDataAccessInterface mockDataAccess;
+    private RecipeOutputBoundary mockOutputBoundary;
     private RecipeInteractor recipeInteractor;
 
     @BeforeEach
-    public void setUp() {
-        recipeDataAccessInterface = new InMemoryRecipeDataAccess();
-        recipeOutputBoundary = new InMemoryRecipeOutputBoundary();
-        recipeInteractor = new RecipeInteractor(recipeDataAccessInterface, recipeOutputBoundary);
+    void setUp() {
+        mockDataAccess = mock(RecipeDataAccessInterface.class);
+        mockOutputBoundary = mock(RecipeOutputBoundary.class);
+        recipeInteractor = new RecipeInteractor(mockDataAccess, mockOutputBoundary);
     }
 
     @Test
-    public void testExecuteSearchRecipe_Success() throws RecipeDataAccessException {
-        String userInput = "pasta";
-        List<Recipes> mockRecipes = new ArrayList<>();
-        mockRecipes.add(new Recipes("Pasta Carbonara", 500));
-        ((InMemoryRecipeDataAccess) recipeDataAccessInterface).setMockRecipeData(mockRecipes);
+    void testExecuteSearchRecipe_success() throws RecipeDataAccessException {
+        // Arrange
+        String userInput = "Pasta";
+        Recipes recipe1 = new Recipes(1, "Spaghetti Carbonara", "image1.jpg");
+        Recipes recipe2 = new Recipes(2, "Fettuccine Alfredo", "image2.jpg");
+        List<Recipes> mockRecipes = Arrays.asList(recipe1, recipe2);
+
+        when(mockDataAccess.searchRecipe(userInput)).thenReturn(mockRecipes);
         recipeInteractor.executeSearchRecipe(userInput);
-        List<Recipes> result = ((InMemoryRecipeOutputBoundary) recipeOutputBoundary).getResult();
-        assertEquals(mockRecipes, result);
+        verify(mockDataAccess).searchRecipe(userInput);
+        verify(mockOutputBoundary).prepareSuccessView(mockRecipes);
+        verifyNoMoreInteractions(mockOutputBoundary);
     }
 
     @Test
-    public void testExecuteSearchRecipe_Failure() throws RecipeDataAccessException {
-        String userInput = "nonexistentrecipe";
-        String errorMessage = "Recipe not found";
-        ((InMemoryRecipeDataAccess) recipeDataAccessInterface).setShouldThrow(true);
+    void testExecuteSearchRecipe_failure() throws RecipeDataAccessException {
+        String userInput = "NonExistent";
+        String errorMessage = "No recipes found for input: NonExistent";
+
+        when(mockDataAccess.searchRecipe(userInput)).thenThrow(new RecipeDataAccessException(errorMessage));
         recipeInteractor.executeSearchRecipe(userInput);
-        String resultErrorMessage = ((InMemoryRecipeOutputBoundary) recipeOutputBoundary).getErrorMessage();
-        assertEquals(errorMessage, resultErrorMessage);
+        verify(mockDataAccess).searchRecipe(userInput);
+        verify(mockOutputBoundary).prepareFailView(errorMessage);
+        verifyNoMoreInteractions(mockOutputBoundary);
     }
 
     @Test
-    public void testExecuteSearchRecipeWithAllergen_Success() throws RecipeDataAccessException {
-        String recipeName = "pasta";
-        String allergen = "gluten";
-        List<Recipes> mockRecipes = new ArrayList<>();
-        mockRecipes.add(new Recipes("Gluten-Free Pasta", 400));
-        ((InMemoryRecipeDataAccess) recipeDataAccessInterface).setMockRecipeData(mockRecipes);
+    void testExecuteSearchRecipe_withAllergen_success() throws RecipeDataAccessException {
+        String recipeName = "Salad";
+        String allergen = "Nuts";
+        Recipes recipe1 = new Recipes(3, "Caesar Salad", "image3.jpg");
+        List<Recipes> mockRecipes = Collections.singletonList(recipe1);
+
+        when(mockDataAccess.searchRecipe(recipeName, allergen)).thenReturn(mockRecipes);
         recipeInteractor.executeSearchRecipe(recipeName, allergen);
-        List<Recipes> result = ((InMemoryRecipeOutputBoundary) recipeOutputBoundary).getResult();
-        assertEquals(mockRecipes, result);
+        verify(mockDataAccess).searchRecipe(recipeName, allergen);
+        verify(mockOutputBoundary).prepareSuccessView(mockRecipes);
+        verifyNoMoreInteractions(mockOutputBoundary);
     }
 
     @Test
-    public void testExecuteSearchRecipeWithAllergen_Failure() throws RecipeDataAccessException {
-        String recipeName = "pasta";
-        String allergen = "gluten";
-        String errorMessage = "Recipe with allergen not found";
-        ((InMemoryRecipeDataAccess) recipeDataAccessInterface).setShouldThrow(true);
+    void testExecuteSearchRecipe_withAllergen_failure() throws RecipeDataAccessException {
+        String recipeName = "Pizza";
+        String allergen = "Dairy";
+        String errorMessage = "No recipes found for input: Pizza, allergen: Dairy";
+
+        when(mockDataAccess.searchRecipe(recipeName, allergen)).thenThrow(new RecipeDataAccessException(errorMessage));
         recipeInteractor.executeSearchRecipe(recipeName, allergen);
-        String resultErrorMessage = ((InMemoryRecipeOutputBoundary) recipeOutputBoundary).getErrorMessage();
-        assertEquals(errorMessage, resultErrorMessage);
-    }
-
-    class InMemoryRecipeDataAccess implements RecipeDataAccessInterface {
-        private List<Recipes> mockRecipeData;
-        private boolean shouldThrow = false;
-
-        @Override
-        public List<Recipes> searchRecipe(String userInput) throws RecipeDataAccessException {
-            if (shouldThrow) {
-                throw new RecipeDataAccessException("Recipe not found");
-            }
-            return mockRecipeData;
-        }
-
-        @Override
-        public List<Recipes> searchRecipe(String recipe, String allergen) throws RecipeDataAccessException {
-            if (shouldThrow) {
-                throw new RecipeDataAccessException("Recipe with allergen not found");
-            }
-            return mockRecipeData;
-        }
-
-        @Override
-        public List<Ingredient> getRecipeIngredients(int recipeId) throws RecipeDataAccessException {
-            return null;
-        }
-
-        @Override
-        public List<String> getSubstitutions(String ingredientName) throws RecipeDataAccessException {
-            return null;
-        }
-
-        @Override
-        public String getInstructions(int recipeId) throws RecipeDataAccessException {
-            return null;
-        }
-
-        public void setMockRecipeData(List<Recipes> mockRecipeData) {
-            this.mockRecipeData = mockRecipeData;
-        }
-
-        public void setShouldThrow(boolean shouldThrow) {
-            this.shouldThrow = shouldThrow;
-        }
-    }
-
-    class InMemoryRecipeOutputBoundary implements RecipeOutputBoundary {
-        private List<Recipes> result;
-        private String errorMessage;
-
-        @Override
-        public void prepareSuccessView(List<Recipes> recipeContents) {
-            this.result = recipeContents;
-        }
-
-        @Override
-        public void prepareFailView(String errorMessage) {
-            this.errorMessage = errorMessage;
-        }
-
-        public List<Recipes> getResult() {
-            return result;
-        }
-
-        public String getErrorMessage() {
-            return errorMessage;
-        }
+        verify(mockDataAccess).searchRecipe(recipeName, allergen);
+        verify(mockOutputBoundary).prepareFailView(errorMessage);
+        verifyNoMoreInteractions(mockOutputBoundary);
     }
 }
