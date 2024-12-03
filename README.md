@@ -109,10 +109,7 @@ Open a recipe and click reviews.
 The reviews left by others can be seen and you can also leave a review by typing in the ‘Add your review’ bar.
 
 ## Example Walkthrough :
-
-
-
-
+https://drive.google.com/file/d/14S20mYhTgedydcPHxKyZPmLkPeNwkx-o/view?usp=share_link
 
 
 ## Contribution by others
